@@ -1,0 +1,19 @@
+{
+  "name": "middleware",
+  "version": "1.0.0",
+  "description": "Trade Use Case",
+  "main": "app.js",
+  "dependencies": {
+    "fabric-ca-client": "^1.1.0",
+    "fabric-client": "^1.1.0",
+    "fs-extra": "^2.0.0",
+    "jsrsasign": "6.2.2",
+    "tape": "^4.5.1",
+    "tape-promise": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

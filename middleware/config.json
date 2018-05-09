@@ -1,0 +1,66 @@
+{
+	"trade-network": {
+		"orderer": {
+			"mspid": "TradeOrdererMSP",
+			"url": "grpcs://localhost:7050",
+			"server-hostname": "orderer.trade.com",
+			"tls_cacerts": "../network/crypto-config/ordererOrganizations/trade.com/orderers/orderer.trade.com/msp/tlscacerts/tlsca.trade.com-cert.pem"
+		},
+		"exporterorg": {
+			"name": "peerExporterOrg",
+			"mspid": "ExporterOrgMSP",
+			"ca": {
+				"url": "https://localhost:7054",
+				"name": "ca-exporterorg"
+			},
+			"peer1": {
+				"requests": "grpcs://localhost:7051",
+				"events": "grpcs://localhost:7053",
+				"server-hostname": "peer0.exporterorg.trade.com",
+				"tls_cacerts": "../network/crypto-config/peerOrganizations/exporterorg.trade.com/peers/peer0.exporterorg.trade.com/msp/tlscacerts/tlsca.exporterorg.trade.com-cert.pem"
+			}
+		},
+		"importerorg": {
+			"name": "peerImporterOrg",
+			"mspid": "ImporterOrgMSP",
+			"ca": {
+				"url": "https://localhost:8054",
+				"name": "ca-importerorg"
+			},
+			"peer1": {
+				"requests": "grpcs://localhost:8051",
+				"events": "grpcs://localhost:8053",
+				"server-hostname": "peer0.importerorg.trade.com",
+				"tls_cacerts": "../network/crypto-config/peerOrganizations/importerorg.trade.com/peers/peer0.importerorg.trade.com/msp/tlscacerts/tlsca.importerorg.trade.com-cert.pem"
+			}
+		},
+		"carrierorg": {
+			"name": "peerCarrierOrg",
+			"mspid": "CarrierOrgMSP",
+			"ca": {
+				"url": "https://localhost:9054",
+				"name": "ca-carrierorg"
+			},
+			"peer1": {
+				"requests": "grpcs://localhost:9051",
+				"events": "grpcs://localhost:9053",
+				"server-hostname": "peer0.carrierorg.trade.com",
+				"tls_cacerts": "../network/crypto-config/peerOrganizations/carrierorg.trade.com/peers/peer0.carrierorg.trade.com/msp/tlscacerts/tlsca.carrierorg.trade.com-cert.pem"
+			}
+		},
+		"regulatororg": {
+			"name": "peerRegulatorOrg",
+			"mspid": "RegulatorOrgMSP",
+			"ca": {
+				"url": "https://localhost:10054",
+				"name": "ca-regulatororg"
+			},
+			"peer1": {
+				"requests": "grpcs://localhost:10051",
+				"events": "grpcs://localhost:10053",
+				"server-hostname": "peer0.regulatororg.trade.com",
+				"tls_cacerts": "../network/crypto-config/peerOrganizations/regulatororg.trade.com/peers/peer0.regulatororg.trade.com/msp/tlscacerts/tlsca.regulatororg.trade.com-cert.pem"
+			}
+		}
+	}
+}
