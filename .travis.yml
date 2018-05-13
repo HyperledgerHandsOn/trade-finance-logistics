@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+- 8
+dist: trusty
+cache:
+  directories:
+  - node_modules
+install:
+- npm install
+script:
+- npm run lint
+- npm test
+- npm run coverage
+- npm run package
+deploy:
+  provider: releases
+  api_key: ${OAUTH_TOKEN}
+  file: ./dist/network.bna
+  skip_cleanup: true
+  on:
+    tags: true
