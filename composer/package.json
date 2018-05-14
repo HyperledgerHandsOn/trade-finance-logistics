@@ -1,0 +1,29 @@
+{
+  "name": "trade-finance-logistics",
+  "version": "0.0.1",
+  "description": "Sample Letter of Credit sample",
+  "scripts": {
+    "prepare": "mkdirp ../dist && composer archive create --sourceType dir --sourceName . -a ../dist/trade-finance-logistics.bna",
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "test": "nyc mocha -t 0 test/*.js && cucumber-js"
+  },
+  "author": "ldesrosi@uk.ibm.com",
+  "email": "ldesrosi@uk.ibm.com",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "composer-admin": "^0.19.1",
+    "composer-cli": "^0.19.1",
+    "composer-client": "^0.19.1",
+    "composer-common": "^0.19.1",
+    "composer-connector-embedded": "^0.19.1",
+    "composer-cucumber-steps": "^0.19.1",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "cucumber": "^2.2.0",
+    "eslint": "latest",
+    "nyc": "latest",
+    "mkdirp": "latest",
+    "mocha": "latest"
+  }
+}

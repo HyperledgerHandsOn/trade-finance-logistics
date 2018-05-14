@@ -1,12 +1,19 @@
 env:
-    es6: true
     node: true
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
-    ecmaVersion: 2015
+    ecmaVersion: 8
     sourceType:
         - script
+globals:
+    getFactory: true
+    getSerializer: true
+    getAssetRegistry: true
+    getParticipantRegistry: true
+    getCurrentParticipant: true
+    post: true
+    emit: true
 rules:
     indent:
         - error
@@ -21,18 +28,16 @@ rules:
         - error
         - always
     no-unused-vars:
-        - error
+        - 0
         - args: none
     no-console: off
     curly: error
     eqeqeq: error
     no-throw-literal: error
     strict: error
-    no-var: error
     dot-notation: error
     no-tabs: error
     no-trailing-spaces: error
-    no-use-before-define: error
     no-useless-call: error
     no-with: error
     operator-linebreak: error
@@ -42,7 +47,6 @@ rules:
             ClassDeclaration: true
             MethodDefinition: true
             FunctionDeclaration: true
-    valid-jsdoc:
-        - error
-        - requireReturn: false
     yoda: error
+    no-confusing-arrow: 2
+    no-constant-condition: 2

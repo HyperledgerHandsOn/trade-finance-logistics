@@ -15,3 +15,10 @@
 
 # Distribution directory
 dist/*
+
+# Node_modules are ignored
+**/node_modules/*
+
+# Ignore lint Output
+**/.nyc_output/
+
