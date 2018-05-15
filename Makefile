@@ -29,7 +29,7 @@ all: build test
 build: clean chaincode composer
 
 .PHONY: test
-build: chaincode_test composer_test
+test: chaincode_test composer_test
 
 .PHONY: chaincode
 chaincode:

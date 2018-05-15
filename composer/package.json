@@ -6,7 +6,15 @@
     "prepare": "mkdirp ../dist && composer archive create --sourceType dir --sourceName . -a ../dist/trade-finance-logistics.bna",
     "pretest": "npm run lint",
     "lint": "eslint .",
-    "test": "nyc mocha -t 0 test/*.js && cucumber-js"
+    "test": "nyc mocha -t 0 test/*.js && cucumber-js",
+    "coverage": "nyc check-coverage",
+    "posttest": "npm run coverage"
+  },
+  "nyc": {
+    "lines": 99,
+    "statements": 99,
+    "functions": 99,
+    "branches": 99
   },
   "author": "ldesrosi@uk.ibm.com",
   "email": "ldesrosi@uk.ibm.com",
