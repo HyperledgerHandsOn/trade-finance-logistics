@@ -50,10 +50,10 @@ Two kinds of augmentation are currently supported:
 ## Add a New Organization and Peers
 - See instructions in [network](network) to create configuration files for the new organization and peers.
 - See instructions in [middleware](middleware) to update the running application to incorporate the new organization and peers.
-.. Alternatively, see instructions in [application](application) to upgrade chaincode through the application server.
+  * Alternatively, see instructions in [application](application) to upgrade chaincode through the application server.
 ## Upgrade Chaincode
 - (*Note*: the upgrade version of the chaincode in this repository assumes that the new organization has already been added above.
-...To test chaincode upgrade without new organizations, modify and test the upgrade version of the chaincode suitably.)
+  * To test chaincode upgrade without new organizations, modify and test the upgrade version of the chaincode suitably.)
 - See instructions in [chaincode](chaincode) to validate the upgrade version, or apply custom modifications followed by unit testing.
 - See instructions in [middleware](middleware) to upgrade chaincode in a running trade application.
-.. Alternatively, see instructions in [application](application) to upgrade chaincode through the application server.
+  * Alternatively, see instructions in [application](application) to upgrade chaincode through the application server.
