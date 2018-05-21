@@ -1,6 +1,6 @@
 # Configuring and Launching a Trade Network
-As described in the [use case document](../docs/Use-Case-Description.docx), we have 6 participants in a trade scenario.
-But since a trading party (exporter or importer) implicitly trusts its bank, the party and the bank can belong to the same organization (run by the bank.)
+As described in the [use case document](../docs/Use-Case-Description.docx), we have 6 participants in a trade scenario.   
+But since a trading party (exporter or importer) implicitly trusts its bank, the party and the bank can belong to the same organization (run by the bank.)   
 The network we configure and run is represented by the figure below, where vertical cylinders represent organizations (with peers and clients), and 
 the nodes themselves (peers and orderers) are connected in a blockchain network represented by the horizontal.
 
@@ -32,7 +32,7 @@ Our application code is based on the current Hyperledger Fabric release version 
 _Note_: The instructions and the `trade.sh` script, and the code in the [middleware](../middleware/) folders, depend on the currently defined configuration. If you edit the above files, you will need to modify the code accordingly.
 
 # Build Channel and Crypto Artifacts, and Network Structure Using Docker Containers
-Run `./trade.sh generate -c tradechannel`
+Run `./trade.sh generate -c tradechannel`   
 The following files and folders should be created:
 - `channel-artifacts/`: contains files `genesis.block`, `channel.tx`, and 4 anchor peer configuration files, one corresponding to each org
 - `crypto-config/`: contains crypto material for the network peers and clients
@@ -68,7 +68,7 @@ We can add a new organization called _exporting entity_ as illustrated in the fi
 _Note_: The instructions and the `trade.sh` script, and the code in the [middleware](../middleware/) folders, depend on the currently defined configuration. If you edit the above files, you will need to modify the code accordingly.
 
 # Build Channel Configuration, Crypto Artifacts, and Network Structure, for the New Organization
-Run `./trade.sh createneworg`
+Run `./trade.sh createneworg`   
 The following files and folders should be created:
 - `channel-artifacts/exportingEntityOrg.json`: contains polices and certificates for the new organization
 - `crypto-config/peerOrganizations/exportingentityorg.trade.com/`: contains crypto material for the network peers and clients

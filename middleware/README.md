@@ -26,24 +26,23 @@ The sequence of operations that need to be performed are as follows:
 - Run `npm install` to install the dependencies.
 
 # Configuring the Middleware
-The `config.json` file contains a specification of the network that will be used to host the trade channel and chaincode.
-Make sure the parameters (hostnames, ports, etc.) match those in the [network](../network/) folder.
-
-The `constants.js` file contains various parameters that dictate how the application will behave, such as the endorsement policy.
-Make sure that the chaincode paths are accurate (they should be relative to the folder `../chaincode/src/`.)
-Make sure that the channel ID (`tradechannel`) matches that used to create channel artifacts in the [network](../network/) folder.
+- The `config.json` file contains a specification of the network that will be used to host the trade channel and chaincode.
+  * Make sure the parameters (hostnames, ports, etc.) match those in the [network](../network/) folder.
+- The `constants.js` file contains various parameters that dictate how the application will behave, such as the endorsement policy.
+  * Make sure that the chaincode paths are accurate (they should be relative to the folder `../chaincode/src/`.)
+  * Make sure that the channel ID (`tradechannel`) matches that used to create channel artifacts in the [network](../network/) folder.
 
 # Test Run to Create a Trade Instance Using the Smart Contract
-Run `node createTradeApp.js`.
-This script runs through the stages from channel creation through to chaincode instantiation.
+Run `node createTradeApp.js`.   
+This script runs through the stages from channel creation through to chaincode instantiation.   
 It then runs a chaincode invocation to create a trade request on behalf of the importer, and then queries the chaincode for the trade status.
 
 # Test Run to Complete a Trade Contract Lifecycle after Setup
-Run `node runTradeScenarioApp.js`.
-This assumes that the `createTradeApp.js` script has run successfully.
-It continues the trade smart contract lifecycle through to completion, as described in the [use case document](../docs/Use-Case-Description.docx).
+Run `node runTradeScenarioApp.js`.   
+This assumes that the `createTradeApp.js` script has run successfully.   
+It continues the trade smart contract lifecycle through to completion, as described in the [use case document](../docs/Use-Case-Description.docx).   
 The parameters supplied in the various chaincode invocations match those in the
-[chaincode unit tests](../chaincode/src/github.com/trade_workflow/tradeWorkflow_test.go).
+[chaincode unit tests](../chaincode/src/github.com/trade_workflow/tradeWorkflow_test.go).   
 _Note_: This script assumes that the initial version of the chaincode is currently deployed on the channel.
 
 # Test Run to Add a New Organization to the Network
