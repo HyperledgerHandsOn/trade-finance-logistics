@@ -45,8 +45,7 @@ function buildChaincodeProposal(client, user_handle, chaincode_path, version, fu
 		fcn: funcName,
 		args: argList,
 		txId: tx_id,
-		'endorsement-policy': Constants.ALL_FOUR_ORG_MEMBERS
-		//'endorsement-policy': Constants.ALL_FIVE_ORG_MEMBERS
+		'endorsement-policy': Constants.TRANSACTION_ENDORSEMENT_POLICY
 	};
 
 	return request;

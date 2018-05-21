@@ -93,7 +93,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('\n');
 	sdkHelper.txEventsCleanup();
 
-	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys']);
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys'], 'Importer');
 }, (err) => {
 	console.log('\n');
 	console.log('------------------------------');
@@ -110,7 +110,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('------------------------------');
 	console.log('\n');
 
-	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9']);
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Exporter');
 }, (err) => {
 	console.log('\n');
 	console.log('-----------------------------');

@@ -16,7 +16,7 @@ Organizations:
         # ID to load the MSP definition as
         ID: ExportingEntityOrgMSP
 
-        MSPDir: crypto-config/peerOrganizations/exportingentityorg.trade.com/msp
+        MSPDir: ../crypto-config/peerOrganizations/exportingentityorg.trade.com/msp
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used

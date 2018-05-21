@@ -44,10 +44,6 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 
 	var targets = [];
 
-	// this is a transaction, will just use org's identity to
-	// submit the request. intentionally we are using a different org
-	// than the one that instantiated the chaincode, although either org
-	// should work properly
 	var client = new Client();
 	var channel = client.newChannel(channel_name);
 	var tx_id = null;
@@ -78,9 +74,13 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			client.setStateStore(store);
 		}
 		return ClientUtils.getSubmitter(client, false, userOrg, userName);
-	}).then((admin) => {
+	}).then((user) => {
 
-		console.log('Successfully enrolled user \'admin\'');
+		if (userName) {
+			console.log('Successfully enrolled user', userName);
+		} else {
+			console.log('Successfully enrolled user \'admin\'');
+		}
 
 		// set up the channel to use each org's 'peer1' for
 		// both requests and events
@@ -132,9 +132,14 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 		return channel.sendTransactionProposal(request);
 
 	}, (err) => {
-
-		console.log('Failed to enroll user \'admin\'. ' + err);
-		throw new Error('Failed to enroll user \'admin\'. ' + err);
+		var errMesg = 'Failed to get submitter ';
+		if (userName) {
+			errMesg = errMesg + userName + '. Error: ' + err;
+		} else {
+			errMesg = errMesg + 'admin. Error: ' + err;
+		}
+		console.log(errMesg);
+		throw new Error(errMesg);
 	}).then((results) =>{
 		var proposalResponses = results[0];
 		console.log('Received', proposalResponses.length, 'responses for proposed transaction');

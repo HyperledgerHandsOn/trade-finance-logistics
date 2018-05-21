@@ -51,37 +51,21 @@ module.exports.init = init;
 
 function getClientUser(userOrg, username, password) {
 	ORGS = Client.getConfigSetting(Constants.networkId);
-	if (ORGS[userOrg] === null) {
-		throw new Error('Unknown org: ' + userOrg);
+	if (ORGS[userOrg] === null || ORGS[userOrg] === undefined) {
+		return new Promise((resolve, reject) => {
+			return reject('Unknown org: ' + userOrg);
+		});
 	}
 	var orgName = ORGS[userOrg].name;
 	var client = new Client();
-	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
-	var channel = client.newChannel(channel_name);
 
 	var cryptoSuite = Client.newCryptoSuite();
 	cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: ClientUtils.storePathForOrg(orgName)}));
 	client.setCryptoSuite(cryptoSuite);
 
-	var caRootsPath = ORGS.orderer.tls_cacerts;
-	let data = fs.readFileSync(path.join(__dirname, caRootsPath));
-	let caroots = Buffer.from(data).toString();
-
-	channel.addOrderer(
-		client.newOrderer(
-			ORGS.orderer.url,
-			{
-				'pem': caroots,
-				'ssl-target-name-override': ORGS.orderer['server-hostname']
-			}
-		)
-	);
-
-	var promise;
-	promise = Client.newDefaultKeyValueStore({
+	return Client.newDefaultKeyValueStore({
 		path: ClientUtils.storePathForOrg(orgName)
-	});
-	return promise.then((store) => {
+	}).then((store) => {
 		if (store) {
 			client.setStateStore(store);
 		}

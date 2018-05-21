@@ -74,7 +74,13 @@ function queryChaincode(userOrg, version, funcName, argList, userName) {
 		client.setStateStore(store);
 		return ClientUtils.getSubmitter(client, false, userOrg, userName);
 
-	}).then((admin) => {
+	}).then((user) => {
+		if (userName) {
+			console.log('Successfully enrolled user', userName);
+		} else {
+			console.log('Successfully enrolled user \'admin\'');
+		}
+
 		// send query
 		var request = {
 			chaincodeId : Constants.CHAINCODE_ID,
@@ -85,8 +91,14 @@ function queryChaincode(userOrg, version, funcName, argList, userName) {
 		return channel.queryByChaincode(request);
 	},
 	(err) => {
-		console.log('Failed to get submitter \'admin\'. Error: ' + err.stack ? err.stack : err );
-		throw new Error('Failed to get submitter');
+		var errMesg = 'Failed to get submitter ';
+		if (userName) {
+			errMesg = errMesg + userName + '. Error: ' + err;
+		} else {
+			errMesg = errMesg + 'admin. Error: ' + err;
+		}
+		console.log(errMesg);
+		throw new Error(errMesg);
 	}).then((response_payloads) => {
 		if (response_payloads) {
 			var value = '';
