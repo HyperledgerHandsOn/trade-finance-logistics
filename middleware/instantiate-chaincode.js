@@ -140,10 +140,9 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 
 	}).then(() => {
 		logger.debug(' orglist:: ', channel.getOrganizations());
+		let request = buildChaincodeProposal(client, user_handle, chaincode_path, version, funcName, argList);
+		tx_id = request.txId;
 		if (upgrade) {
-			let request = buildChaincodeProposal(client, user_handle, chaincode_path, version, funcName, argList);
-			tx_id = request.txId;
-
 			logger.debug(util.format(
 				'Upgrading chaincode "%s" at path "%s" to version "%s" by passing args "%s" to method "%s" in transaction "%s"',
 				request.chaincodeId,
@@ -154,18 +153,10 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 				request.txId.getTransactionID()
 			));
 
-			// this is the longest response delay in the test, sometimes
-			// x86 CI times out. set the per-request timeout to a super-long value
-			return channel.sendUpgradeProposal(request, 300000)
-			.then((results) => {
-				return Promise.resolve(results);
-			});
+			// This process could take a while, so we set a very long timeout
+			return channel.sendUpgradeProposal(request, 300000);
 		} else {
-			let request = buildChaincodeProposal(client, user_handle, chaincode_path, version, funcName, argList);
-			tx_id = request.txId;
-
-			// this is the longest response delay in the test, sometimes
-			// x86 CI times out. set the per-request timeout to a super-long value
+			// This process could take a while, so we set a very long timeout
 			return channel.sendInstantiateProposal(request, 300000);
 		}
 

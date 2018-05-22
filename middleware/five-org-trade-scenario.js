@@ -27,7 +27,7 @@ var queryCC = require('./query-chaincode.js');
 
 
 // Invoke and query operations
-invokeCC.invokeChaincode(Constants.EXPORTING_ENTITY_ORG, Constants.CHAINCODE_VERSION, 'acceptTrade', ['2ks89j9'], 'ExportingEntity')
+invokeCC.invokeChaincode(Constants.EXPORTING_ENTITY_ORG, Constants.CHAINCODE_UPGRADE_VERSION, 'acceptTrade', ['2ks89j9'], 'ExportingEntity')
 .then(() => {
 	console.log('\n');
 	console.log('------------------------------');
@@ -35,7 +35,7 @@ invokeCC.invokeChaincode(Constants.EXPORTING_ENTITY_ORG, Constants.CHAINCODE_VER
 	console.log('------------------------------');
 	console.log('\n');
 
-	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Importer');
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_UPGRADE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Importer');
 }, (err) => {
 	console.log('\n');
 	console.log('-----------------------------');
