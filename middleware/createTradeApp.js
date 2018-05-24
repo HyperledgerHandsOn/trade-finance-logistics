@@ -23,7 +23,6 @@ var installCC = require('./install-chaincode.js');
 var instantiateCC = require('./instantiate-chaincode.js');
 var invokeCC = require('./invoke-chaincode.js');
 var queryCC = require('./query-chaincode.js');
-//var upgradeCC = require('./upgrade-chaincode.js');
 
 
 // Create a channel using the given network configuration

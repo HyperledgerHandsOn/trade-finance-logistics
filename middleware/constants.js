@@ -107,8 +107,8 @@ var chaincodeLocation = '../chaincode';
 
 var networkId = 'trade-network';
 
-//var networkConfig = './config.json';
-var networkConfig = './config_upgrade.json';
+var networkConfig = './config.json';
+//var networkConfig = './config_upgrade.json';
 
 var networkLocation = '../network';
 
@@ -127,8 +127,8 @@ var CHAINCODE_VERSION = 'v0';
 var CHAINCODE_UPGRADE_PATH = 'github.com/trade_workflow_v1';
 var CHAINCODE_UPGRADE_VERSION = 'v1';
 
-//var TRANSACTION_ENDORSEMENT_POLICY = ALL_FOUR_ORG_MEMBERS;
-var TRANSACTION_ENDORSEMENT_POLICY = ALL_FIVE_ORG_MEMBERS;
+var TRANSACTION_ENDORSEMENT_POLICY = ALL_FOUR_ORG_MEMBERS;
+//var TRANSACTION_ENDORSEMENT_POLICY = ALL_FIVE_ORG_MEMBERS;
 
 module.exports = {
 	tempdir: tempdir,

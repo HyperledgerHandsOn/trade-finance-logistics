@@ -162,6 +162,7 @@ app.post('/login', async function(req, res) {
 	});
 
 });
+
 // Create Channel
 app.post('/channel/create', async function(req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< C R E A T E  C H A N N E L >>>>>>>>>>>>>>>>>');
@@ -182,6 +183,7 @@ app.post('/channel/create', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Join Channel
 app.post('/channel/join', async function(req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< J O I N  C H A N N E L >>>>>>>>>>>>>>>>>');
@@ -199,6 +201,7 @@ app.post('/channel/join', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Install chaincode on target peers
 app.post('/chaincode/install', async function(req, res) {
 	logger.debug('==================== INSTALL CHAINCODE ==================');
@@ -216,6 +219,7 @@ app.post('/chaincode/install', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Instantiate chaincode on target peers
 app.post('/chaincode/instantiate', async function(req, res) {
 	logger.debug('==================== INSTANTIATE CHAINCODE ==================');
@@ -239,7 +243,7 @@ app.post('/chaincode/instantiate', async function(req, res) {
 		Constants.CHAINCODE_PATH,
 		Constants.CHAINCODE_VERSION,
 		'init',
-		['LumberInc', 'LumberBank', '100000', 'WoodenToys', 'ToyBank', '200000', 'UniversalFrieght', 'ForestryDepartment'],
+		args,
 		false
 	).then(() => {
 		sdkHelper.txEventsCleanup();
@@ -248,6 +252,7 @@ app.post('/chaincode/instantiate', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Invoke transaction on chaincode on target peers
 app.post('/chaincode/:fcn', async function(req, res) {
 	logger.debug('==================== INVOKE ON CHAINCODE ==================');
@@ -272,6 +277,7 @@ app.post('/chaincode/:fcn', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Query on chaincode on target peers
 app.get('/chaincode/:fcn', async function(req, res) {
 	logger.debug('==================== QUERY BY CHAINCODE ==================');

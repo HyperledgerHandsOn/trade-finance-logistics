@@ -33,9 +33,11 @@ var instantiateCC = require('./instantiate-chaincode.js');
 
 // Install a chaincode, and upon success, attempt to upgrade it on the channel
 installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE_UPGRADE_VERSION).then(() => {
-	console.log('\n-------------------------');
+	console.log('\n');
+	console.log('--------------------------------');
 	console.log('NEW CHAINCODE INSTALL COMPLETE');
-	console.log('-------------------------\n');
+	console.log('--------------------------------');
+	console.log('\n');
 
 	instantiateCC.instantiateOrUpgradeChaincode(
 		Constants.IMPORTER_ORG,
@@ -45,20 +47,26 @@ installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE
 		[],
 		true
 	).then(() => {
-		console.log('\n-----------------------------');
+		console.log('\n');
+		console.log('----------------------------');
 		console.log('CHAINCODE UPGRADE COMPLETE');
-		console.log('-----------------------------\n');
+		console.log('----------------------------');
+		console.log('\n');
 		sdkHelper.txEventsCleanup();
 	}, (err) => {
-		console.log('\n------------------------------');
+		console.log('\n');
+		console.log('------------------------------');
 		console.log('CHAINCODE UPGRADE FAILED:', err);
-		console.log('-----------------------------\n');
+		console.log('-----------------------------');
+		console.log('\n');
 		process.exit(1);
 	})
 }, (err) => {
-	console.log('\n-------------------------');
+	console.log('\n');
+	console.log('-----------------------------------');
 	console.log('NEW CHAINCODE INSTALL FAILED:', err);
-	console.log('-------------------------\n');
+	console.log('-----------------------------------');
+	console.log('\n');
 	process.exit(1);
 });
 

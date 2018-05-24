@@ -23,40 +23,503 @@ var installCC = require('./install-chaincode.js');
 var instantiateCC = require('./instantiate-chaincode.js');
 var invokeCC = require('./invoke-chaincode.js');
 var queryCC = require('./query-chaincode.js');
-//var upgradeCC = require('./upgrade-chaincode.js');
 
 
-// Invoke and query operations
+/////////////////////////////////
+// INVOKE AND QUERY OPERATIONS //
+/////////////////////////////////
+
+// INVOKE: acceptTrade (Exporter)
 invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'acceptTrade', ['2ks89j9'], 'Exporter')
 .then(() => {
 	console.log('\n');
 	console.log('------------------------------');
 	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('acceptTrade SUCCEEDED');
 	console.log('------------------------------');
 	console.log('\n');
 
+	// QUERY: getTradeStatus (Importer)
 	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Importer');
 }, (err) => {
 	console.log('\n');
 	console.log('-----------------------------');
 	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('acceptTrade FAILED');
 	console.log('-----------------------------');
 	console.log('\n');
 	process.exit(1);
 })
-// Query the chaincode for the trade request status
 .then((result) => {
 	console.log('\n');
 	console.log('-------------------------');
 	console.log('CHAINCODE QUERY COMPLETE');
-	console.log('VALUE:', result);
+	console.log('getTradeStatus VALUE:', result);
 	console.log('-------------------------');
 	console.log('\n');
+
+	// INVOKE: requestLC (Importer)
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestLC', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getTradeStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('requestLC SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getLCStatus (Importer)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getLCStatus', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('requestLC FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getLCStatus VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: issueLC (Importer's Bank)
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'issueLC', ['2ks89j9', 'lc8349', '12/31/2018', 'E/L', 'B/L'], 'ImportersBank');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getLCStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('issueLC SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getLCStatus (Importer's Bank)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getLCStatus', ['2ks89j9'], 'ImportersBank');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('issueLC FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getLCStatus VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: acceptLC (Exporter's Bank)
+	return invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'acceptLC', ['2ks89j9'], 'ExportersBank');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getLCStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('acceptLC SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getLCStatus (Exporter's Bank)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getLCStatus', ['2ks89j9'], 'ExportersBank');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('acceptLC FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getLCStatus VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: requestEL (Exporter)
+	return invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestEL', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getLCStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('requestEL SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getELStatus (Exporter)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getELStatus', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('requestEL FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getELStatus VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: issueEL (Regulator)
+	return invokeCC.invokeChaincode(Constants.REGULATOR_ORG, Constants.CHAINCODE_VERSION, 'issueEL', ['2ks89j9', 'el979', '4/30/2019'], 'Regulator');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getELStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('issueEL SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getELStatus (Exporter)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getELStatus', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('issueEL FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getELStatus VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: prepareShipment (Exporter)
+	return invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'prepareShipment', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getELStatus FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('prepareShipment SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getShipmentLocation (Importer)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getShipmentLocation', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('prepareShipment FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getShipmentLocation VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: acceptShipmentAndIssueBL (Carrier)
+	return invokeCC.invokeChaincode(Constants.CARRIER_ORG, Constants.CHAINCODE_VERSION, 'acceptShipmentAndIssueBL', ['2ks89j9', 'bl06678', '8/31/2018', 'Woodlands Port', 'Market Port'], 'Carrier');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getShipmentLocation FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('acceptShipmentAndIssueBL SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getBillOfLading (Exporter)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getBillOfLading', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('acceptShipmentAndIssueBL FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getBillOfLading VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: requestPayment (Exporter)
+	return invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestPayment', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getBillOfLading FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('requestPayment SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// INVOKE: makePayment (Importer)
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'makePayment', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('requestPayment FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('makePayment SUCCEEDED');
+	console.log('-------------------------');
+	console.log('\n');
+
+	// QUERY: getAccountBalance (Exporter)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getAccountBalance', ['2ks89j9', 'exporter'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('makePayment FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('getAccountBalance VALUE:', result);
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getAccountBalance (Importer)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getAccountBalance', ['2ks89j9', 'importer'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('getAccountBalance FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getAccountBalance VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: updateShipmentLocation (Carrier)
+	return invokeCC.invokeChaincode(Constants.CARRIER_ORG, Constants.CHAINCODE_VERSION, 'updateShipmentLocation', ['2ks89j9', 'DESTINATION'], 'Carrier');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getAccountBalance FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('updateShipmentLocation SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getShipmentLocation (Importer)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getShipmentLocation', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('updateShipmentLocation FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getShipmentLocation VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
+	// INVOKE: requestPayment (Exporter)
+	return invokeCC.invokeChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestPayment', ['2ks89j9'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getShipmentLocation FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('requestPayment SUCCEEDED');
+	console.log('------------------------------');
+	console.log('\n');
+
+	// INVOKE: makePayment (Importer)
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'makePayment', ['2ks89j9'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('requestPayment FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('makePayment SUCCEEDED');
+	console.log('-------------------------');
+	console.log('\n');
+
+	// QUERY: getAccountBalance (Exporter)
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getAccountBalance', ['2ks89j9', 'exporter'], 'Exporter');
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------');
+	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('makePayment FAILED');
+	console.log('------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE INVOCATION COMPLETE');
+	console.log('getAccountBalance VALUE:', result);
+	console.log('------------------------------');
+	console.log('\n');
+
+	// QUERY: getAccountBalance (Importer)
+	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getAccountBalance', ['2ks89j9', 'importer'], 'Importer');
+}, (err) => {
+	console.log('\n');
+	console.log('-----------------------------');
+	console.log('CHAINCODE INVOCATION FAILED:', err);
+	console.log('getAccountBalance FAILED');
+	console.log('-----------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then((result) => {
+	console.log('\n');
+	console.log('-------------------------');
+	console.log('CHAINCODE QUERY COMPLETE');
+	console.log('getAccountBalance VALUE:', result);
+	console.log('-------------------------');
+	console.log('\n');
+
 	sdkHelper.txEventsCleanup();
 }, (err) => {
 	console.log('\n');
 	console.log('------------------------');
 	console.log('CHAINCODE QUERY FAILED:', err);
+	console.log('getAccountBalance FAILED');
 	console.log('------------------------');
 	console.log('\n');
 	process.exit(1);
