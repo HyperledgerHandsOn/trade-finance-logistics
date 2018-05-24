@@ -30,14 +30,12 @@ var _test = require('tape-promise');
 var test = _test(tape);
 
 var Client = require('fabric-client');
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 
 var ORGS, PEER_ORGS;
 
 function installChaincodeInOrgPeers(org, chaincode_path, chaincode_version) {
-	sdkHelper.init();
 	Client.setConfigSetting('request-timeout', 60000);
 	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
 
@@ -143,7 +141,12 @@ function installChaincodeInOrgPeers(org, chaincode_path, chaincode_version) {
 	});
 }
 
-function installChaincode(chaincode_path, chaincode_version) {
+function installChaincode(chaincode_path, chaincode_version, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	// temporarily set $GOPATH to the chaincode folder
 	process.env.GOPATH = path.join(__dirname, Constants.chaincodeLocation);
 

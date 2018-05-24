@@ -37,7 +37,6 @@ var configEnvelopeProto = protobufjs.loadProtoFile(path.join(__dirname, 'node_mo
 
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
-var sdkHelper = require('./sdkHelper.js');
 
 var ORGS, PEER_ORGS;
 
@@ -61,7 +60,12 @@ function enrollOrgAdminAndSignConfig(org, client, config, signatures) {
 //
 //Attempt to send a request to the orderer with the updateChannel method
 //
-function upgradeChannel(channel_name) {
+function upgradeChannel(channel_name, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
 	ORGS = Client.getConfigSetting(Constants.networkId);
 	PEER_ORGS = [];
@@ -179,7 +183,7 @@ function upgradeChannel(channel_name) {
 		logger.debug('Channel configuration updated; response ::%j',result);
 		console.log('Successfully updated the channel.');
 		if(result.status && result.status === 'SUCCESS') {
-			return sdkHelper.sleep(5000);
+			return ClientUtils.sleep(5000);
 		} else {
 			throw new Error('Failed to update the channel. ');
 		}
@@ -207,3 +211,5 @@ upgradeChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('\n');
 	process.exit(1);
 });
+
+module.exports.upgradeChannel = upgradeChannel;

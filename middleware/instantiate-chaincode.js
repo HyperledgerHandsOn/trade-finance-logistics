@@ -30,7 +30,6 @@ var _test = require('tape-promise');
 var test = _test(tape);
 
 var Client = require('fabric-client');
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 
@@ -51,8 +50,12 @@ function buildChaincodeProposal(client, user_handle, chaincode_path, version, fu
 	return request;
 }
 
-function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcName, argList, upgrade){
-	sdkHelper.init();
+function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcName, argList, upgrade, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
@@ -127,7 +130,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 			}
 		);
 		eh.connect();
-		sdkHelper.eventhubs.push(eh);
+		ClientUtils.eventhubs.push(eh);
 
 		// read the config block from the orderer for the channel
 		// and initialize the verify MSPs based on the participating
@@ -195,7 +198,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 			var deployId = tx_id.getTransactionID();
 
 			var eventPromises = [];
-			sdkHelper.eventhubs.forEach((eh) => {
+			ClientUtils.eventhubs.forEach((eh) => {
 				let txPromise = new Promise((resolve, reject) => {
 					let handle = setTimeout(reject, 300000);
 

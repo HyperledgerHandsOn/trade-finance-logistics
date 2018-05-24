@@ -16,7 +16,7 @@
 'use strict';
 
 var Constants = require('./constants.js');
-var sdkHelper = require('./sdkHelper.js');
+var ClientUtils = require('./clientUtils.js');
 var createChannel = require('./create-channel.js');
 var joinChannel = require('./join-channel.js');
 var installCC = require('./install-chaincode.js');
@@ -90,7 +90,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('CHAINCODE INSTANTIATE COMPLETE');
 	console.log('-------------------------------');
 	console.log('\n');
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 
 	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys'], 'Importer');
 }, (err) => {
@@ -126,7 +126,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('VALUE:', result);
 	console.log('-------------------------');
 	console.log('\n');
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 }, (err) => {
 	console.log('\n');
 	console.log('------------------------');
@@ -148,5 +148,5 @@ process.on('unhandledRejection', err => {
 
 process.on('exit', () => {
 	joinChannel.joinEventsCleanup();
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 });

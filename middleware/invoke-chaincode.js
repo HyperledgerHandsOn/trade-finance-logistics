@@ -28,14 +28,17 @@ var logger = utils.getLogger('E2E instantiate-chaincode');
 var tape = require('tape');
 var _test = require('tape-promise');
 var test = _test(tape);
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var Client = require('fabric-client');
 var ClientUtils = require('./clientUtils.js');
 
 // If 'userName' is not specified, default to 'admin' for the org 'userOrg'
-function invokeChaincode(userOrg, version, funcName, argList, userName) {
-	sdkHelper.init();
+function invokeChaincode(userOrg, version, funcName, argList, userName, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	logger.debug('invokeChaincode begin');
@@ -111,7 +114,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			}
 		);
 		eh.connect();
-		sdkHelper.eventhubs.push(eh);
+		ClientUtils.eventhubs.push(eh);
 
 		return channel.initialize();
 
@@ -187,7 +190,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			var deployId = tx_id.getTransactionID();
 
 			var eventPromises = [];
-			sdkHelper.eventhubs.forEach((eh) => {
+			ClientUtils.eventhubs.forEach((eh) => {
 				let txPromise = new Promise((resolve, reject) => {
 					let handle = setTimeout(reject, 300000);
 

@@ -27,13 +27,16 @@ var utils = require('fabric-client/lib/utils.js');
 var tape = require('tape');
 var _test = require('tape-promise');
 var test = _test(tape);
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var Client = require('fabric-client');
 var ClientUtils = require('./clientUtils.js');
 
-function queryChaincode(userOrg, version, funcName, argList, userName) {
-	sdkHelper.init();
+function queryChaincode(userOrg, version, funcName, argList, userName, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	Client.setConfigSetting('request-timeout', 60000);

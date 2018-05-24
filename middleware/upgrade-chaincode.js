@@ -26,13 +26,16 @@ var test = _test(tape);
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
+var ClientUtils = require('./clientUtils.js');
 var installCC = require('./install-chaincode.js');
 var instantiateCC = require('./instantiate-chaincode.js');
 
+Constants.networkConfig = './config_upgrade.json';	// Use the augmented configuration
+Constants.TRANSACTION_ENDORSEMENT_POLICY = Constants.ALL_FIVE_ORG_MEMBERS;	// Use the updated endorsement policy
+
 // Install a chaincode, and upon success, attempt to upgrade it on the channel
-installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE_UPGRADE_VERSION).then(() => {
+installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE_UPGRADE_VERSION, Constants).then(() => {
 	console.log('\n');
 	console.log('--------------------------------');
 	console.log('NEW CHAINCODE INSTALL COMPLETE');
@@ -45,14 +48,15 @@ installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE
 		Constants.CHAINCODE_UPGRADE_VERSION,
 		'init',
 		[],
-		true
+		true,
+		Constants
 	).then(() => {
 		console.log('\n');
 		console.log('----------------------------');
 		console.log('CHAINCODE UPGRADE COMPLETE');
 		console.log('----------------------------');
 		console.log('\n');
-		sdkHelper.txEventsCleanup();
+		ClientUtils.txEventsCleanup();
 	}, (err) => {
 		console.log('\n');
 		console.log('------------------------------');

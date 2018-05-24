@@ -28,15 +28,14 @@ var fs = require('fs');
 
 var Client = require('fabric-client');
 
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
-var ClientUtils = require('./clientUtils.js');
 var joinChannel = require('./join-channel.js');
 
+Constants.networkConfig = './config_upgrade.json';	// Use the augmented configuration
 Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
 var ORGS = Client.getConfigSetting(Constants.networkId);
 
-joinChannel.joinChannel('exportingentityorg', ORGS).then(() => {
+joinChannel.joinChannel('exportingentityorg', ORGS, Constants).then(() => {
 	console.log('\n');
 	console.log('----------------------------------');
 	console.log('CHANNEL JOIN FOR NEW ORG COMPLETE');

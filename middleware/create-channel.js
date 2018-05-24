@@ -33,7 +33,6 @@ var _configtxProto = grpc.load(path.join(__dirname, 'node_modules/fabric-client/
 
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
-var sdkHelper = require('./sdkHelper.js');
 
 var ORGS, PEER_ORGS;
 
@@ -57,7 +56,11 @@ function enrollOrgAdminAndSignConfig(org, client, config, signatures) {
 //
 //Attempt to send a request to the orderer with the createChannel method
 //
-function createChannel(channel_name) {
+function createChannel(channel_name, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
 	Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
 	ORGS = Client.getConfigSetting(Constants.networkId);
 	PEER_ORGS = [];
@@ -170,7 +173,7 @@ function createChannel(channel_name) {
 		logger.debug('Channel creation complete; response ::%j',result);
 		if(result.status && result.status === 'SUCCESS') {
 			console.log('Successfully created the channel.');
-			return sdkHelper.sleep(5000);
+			return ClientUtils.sleep(5000);
 		} else {
 			throw new Error('Failed to create the channel. ');
 		}

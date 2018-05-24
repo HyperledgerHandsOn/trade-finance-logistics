@@ -29,7 +29,7 @@ var bearerToken = require('express-bearer-token');
 var cors = require('cors');
 
 var Constants = require('../middleware/constants.js');
-var sdkHelper = require('../middleware/sdkHelper.js');
+var ClientUtils = require('../middleware/clientUtils.js');
 var createChannel = require('../middleware/create-channel.js');
 var joinChannel = require('../middleware/join-channel.js');
 var installCC = require('../middleware/install-chaincode.js');
@@ -130,7 +130,7 @@ app.post('/login', async function(req, res) {
 		username: username,
 		orgName: orgName
 	}, app.get('secret'));
-	sdkHelper.getClientUser(orgName, username, password)
+	ClientUtils.getClientUser(orgName, username, password)
 	.then((response) => {
 		logger.debug('-- returned from registering (logging in) the username %s for organization %s',username,orgName);
 		if (response && typeof response !== 'string') {
@@ -213,14 +213,24 @@ app.post('/chaincode/install', async function(req, res) {
 		return;
 	}
 
-	installCC.installChaincode(Constants.CHAINCODE_PATH, Constants.CHAINCODE_VERSION).then(() => {
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+	installCC.installChaincode(ccpath, ccversion).then(() => {
 		res.json({success: true, message: 'Chaincode installed'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
 });
 
-// Instantiate chaincode on target peers
+// Instantiate chaincode on network peers
 app.post('/chaincode/instantiate', async function(req, res) {
 	logger.debug('==================== INSTANTIATE CHAINCODE ==================');
 	logger.debug('username :' + req.username);
@@ -231,6 +241,16 @@ app.post('/chaincode/instantiate', async function(req, res) {
 		return;
 	}
 
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
 	var args = req.body.args;
 	if (!args) {
 		res.json(getErrorMessage('\'args\''));
@@ -238,16 +258,47 @@ app.post('/chaincode/instantiate', async function(req, res) {
 	}
 	logger.debug('args  : ' + args);
 
-	instantiateCC.instantiateOrUpgradeChaincode(
-		Constants.IMPORTER_ORG,
-		Constants.CHAINCODE_PATH,
-		Constants.CHAINCODE_VERSION,
-		'init',
-		args,
-		false
-	).then(() => {
-		sdkHelper.txEventsCleanup();
+	instantiateCC.instantiateOrUpgradeChaincode(req.orgname, ccpath, ccversion, 'init', args, false)
+	.then(() => {
+		ClientUtils.txEventsCleanup();
 		res.json({success: true, message: 'Chaincode instantiated'});
+	}, (err) => {
+		res.json({success: false, message: err.message});
+	});
+});
+
+// Upgrade chaincode on network peers
+app.post('/chaincode/instantiate', async function(req, res) {
+	logger.debug('==================== INSTANTIATE CHAINCODE ==================');
+	logger.debug('username :' + req.username);
+	logger.debug('orgname:' + req.orgname);
+	if (req.username !== 'admin') {
+		res.statusCode = 403;
+		res.send('Not an admin user: ' + req.username);
+		return;
+	}
+
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+	var args = req.body.args;
+	if (!args) {
+		res.json(getErrorMessage('\'args\''));
+		return;
+	}
+	logger.debug('args  : ' + args);
+
+	instantiateCC.instantiateOrUpgradeChaincode(req.orgname, ccpath, ccversion, 'init', args, true)
+	.then(() => {
+		ClientUtils.txEventsCleanup();
+		res.json({success: true, message: 'Chaincode upgraded'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
@@ -271,7 +322,7 @@ app.post('/chaincode/:fcn', async function(req, res) {
 	logger.debug('args  : ' + args);
 
 	invokeCC.invokeChaincode(req.orgname, Constants.CHAINCODE_VERSION, fcn, args, req.username).then(() => {
-		sdkHelper.txEventsCleanup();
+		ClientUtils.txEventsCleanup();
 		res.json({success: true, message: 'Chaincode invoked'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
@@ -296,7 +347,7 @@ app.get('/chaincode/:fcn', async function(req, res) {
 	logger.debug('args  : ' + args);
 
 	queryCC.queryChaincode(req.orgname, Constants.CHAINCODE_VERSION, fcn, args).then((result) => {
-		sdkHelper.txEventsCleanup();
+		ClientUtils.txEventsCleanup();
 		res.json({success: true, message: result});
 	}, (err) => {
 		res.json({success: false, message: err.message});
