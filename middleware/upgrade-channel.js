@@ -17,24 +17,12 @@
 
 var cproc = require('child_process');
 var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E update-channel');
+var logger = utils.getLogger('upgrade-channel');
 
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-
-var Client = require('fabric-client');
-var util = require('util');
 var fs = require('fs');
 var path = require('path');
-var grpc = require('grpc');
 
-var _commonProto = grpc.load(path.join(__dirname, 'node_modules/fabric-client/lib/protos/common/common.proto')).common;
-var _configtxProto = grpc.load(path.join(__dirname, 'node_modules/fabric-client/lib/protos/common/configtx.proto')).common;
-var protobufjs = require('protobufjs');
-var configProto = protobufjs.loadProtoFile(path.join(__dirname, 'node_modules/fabric-client/lib/protos/common/configtx.proto')).build('common.Config');
-var configEnvelopeProto = protobufjs.loadProtoFile(path.join(__dirname, 'node_modules/fabric-client/lib/protos/common/configtx.proto')).build('common.ConfigEnvelope');
-
+var Client = require('fabric-client');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 
@@ -58,7 +46,7 @@ function enrollOrgAdminAndSignConfig(org, client, config, signatures) {
 }
 
 //
-//Attempt to send a request to the orderer with the updateChannel method
+// Send a channel configuration update request to the orderer
 //
 function upgradeChannel(channel_name, constants) {
 	if (constants) {

@@ -14,23 +14,17 @@
  *  limitations under the License.
  */
 
+var utils = require('fabric-client/lib/utils.js');
+var logger = utils.getLogger('ClientUtils');
+
 var path = require('path');
 var fs = require('fs-extra');
-var os = require('os');
 var util = require('util');
-
-var jsrsa = require('jsrsasign');
-var KEYUTIL = jsrsa.KEYUTIL;
 
 var Client = require('fabric-client');
 var copService = require('fabric-ca-client/lib/FabricCAClientImpl.js');
 var User = require('fabric-client/lib/User.js');
-var CryptoSuite = require('fabric-client/lib/impl/CryptoSuite_ECDSA_AES.js');
-var KeyStore = require('fabric-client/lib/impl/CryptoKeyStore.js');
-var ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 var Constants = require('./constants.js');
-
-var logger = require('fabric-client/lib/utils.js').getLogger('ClientUtils');
 
 // all temporary files and directories are created under here
 var tempdir = Constants.tempdir;

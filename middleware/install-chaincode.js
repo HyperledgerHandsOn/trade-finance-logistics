@@ -19,15 +19,11 @@
 'use strict';
 
 var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E install-chaincode');
+var logger = utils.getLogger('install-chaincode');
 
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
 
 var Client = require('fabric-client');
 var Constants = require('./constants.js');
@@ -35,6 +31,9 @@ var ClientUtils = require('./clientUtils.js');
 
 var ORGS, PEER_ORGS;
 
+//
+// Install chaincode on peers of this org
+//
 function installChaincodeInOrgPeers(org, chaincode_path, chaincode_version) {
 	Client.setConfigSetting('request-timeout', 60000);
 	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
@@ -141,6 +140,9 @@ function installChaincodeInOrgPeers(org, chaincode_path, chaincode_version) {
 	});
 }
 
+//
+// Install chaincode on peers of all orgs
+//
 function installChaincode(chaincode_path, chaincode_version, constants) {
 	if (constants) {
 		Constants = constants;

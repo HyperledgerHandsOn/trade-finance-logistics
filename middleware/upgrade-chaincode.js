@@ -18,14 +18,6 @@
 // in a happy-path scenario
 'use strict';
 
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E upgrade-chaincode');
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-var util = require('util');
-var path = require('path');
-var fs = require('fs');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 var installCC = require('./install-chaincode.js');
@@ -42,7 +34,7 @@ installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE
 	console.log('--------------------------------');
 	console.log('\n');
 
-	instantiateCC.instantiateOrUpgradeChaincode(
+	return instantiateCC.instantiateOrUpgradeChaincode(
 		Constants.IMPORTER_ORG,
 		Constants.CHAINCODE_UPGRADE_PATH,
 		Constants.CHAINCODE_UPGRADE_VERSION,
@@ -50,26 +42,27 @@ installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE
 		[],
 		true,
 		Constants
-	).then(() => {
-		console.log('\n');
-		console.log('----------------------------');
-		console.log('CHAINCODE UPGRADE COMPLETE');
-		console.log('----------------------------');
-		console.log('\n');
-		ClientUtils.txEventsCleanup();
-	}, (err) => {
-		console.log('\n');
-		console.log('------------------------------');
-		console.log('CHAINCODE UPGRADE FAILED:', err);
-		console.log('-----------------------------');
-		console.log('\n');
-		process.exit(1);
-	})
+	);
 }, (err) => {
 	console.log('\n');
 	console.log('-----------------------------------');
 	console.log('NEW CHAINCODE INSTALL FAILED:', err);
 	console.log('-----------------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('----------------------------');
+	console.log('CHAINCODE UPGRADE COMPLETE');
+	console.log('----------------------------');
+	console.log('\n');
+	ClientUtils.txEventsCleanup();
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE UPGRADE FAILED:', err);
+	console.log('-----------------------------');
 	console.log('\n');
 	process.exit(1);
 });

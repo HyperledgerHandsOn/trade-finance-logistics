@@ -14,23 +14,18 @@
  *  limitations under the License.
  */
 
-// This is an end-to-end test that focuses on exercising all parts of the fabric APIs
-// in a happy-path scenario
 'use strict';
 
-var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var utils = require('fabric-client/lib/utils.js');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
 var Constants = require('./constants.js');
 var Client = require('fabric-client');
 var ClientUtils = require('./clientUtils.js');
 
+//
+// Send chaincode query request to the peer
+//
 function queryChaincode(userOrg, version, funcName, argList, userName, constants) {
 	if (constants) {
 		Constants = constants;

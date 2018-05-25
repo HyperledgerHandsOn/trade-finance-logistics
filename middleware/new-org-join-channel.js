@@ -15,19 +15,9 @@
  */
 'use strict';
 
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E new-org-join-channel');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-
-var util = require('util');
 var path = require('path');
-var fs = require('fs');
 
 var Client = require('fabric-client');
-
 var Constants = require('./constants.js');
 var joinChannel = require('./join-channel.js');
 

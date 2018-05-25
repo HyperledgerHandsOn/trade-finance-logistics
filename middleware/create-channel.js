@@ -16,14 +16,9 @@
 'use strict';
 
 var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E create-channel');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
+var logger = utils.getLogger('create-channel');
 
 var Client = require('fabric-client');
-var util = require('util');
 var fs = require('fs');
 var path = require('path');
 var grpc = require('grpc');
@@ -54,7 +49,7 @@ function enrollOrgAdminAndSignConfig(org, client, config, signatures) {
 }
 
 //
-//Attempt to send a request to the orderer with the createChannel method
+// Send a channel creation request to the orderer
 //
 function createChannel(channel_name, constants) {
 	if (constants) {

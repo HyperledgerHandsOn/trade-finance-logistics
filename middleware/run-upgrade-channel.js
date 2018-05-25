@@ -15,20 +15,6 @@
  */
 'use strict';
 
-var cproc = require('child_process');
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E update-channel');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-
-var Client = require('fabric-client');
-var util = require('util');
-var fs = require('fs');
-var path = require('path');
-var grpc = require('grpc');
-
 var Constants = require('./constants.js');
 var upgradeChannel = require('./upgrade-channel.js');
 
