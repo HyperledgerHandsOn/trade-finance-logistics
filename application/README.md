@@ -77,6 +77,21 @@ In a terminal window:
     }
     ```
 
+- __/channel/addorg__: Add `exportingentityorg` organization and its peer to `tradechannel`
+  * _Method_: POST
+  * _URL Parameters_: None
+  * _Header_: `authorization: Bearer <JSON Web Token>`
+  * _Body_: None
+  * _Access Control_: Only `admin` user
+  * _Return Value_: 200 status code upon success or 403 upon authentication failure
+    * If 200: return value is a JSON:
+    ```
+    {
+        "success": <boolean>,
+        "message": <string>
+    }
+    ```
+
 - __/chaincode/install__: Install the chaincode on the peers joined to `tradechannel`
   * _Method_: POST
   * _URL Parameters_: None
@@ -124,7 +139,7 @@ In a terminal window:
     }
     ```
 
-- __/chaincode/upgrade__: Upgrade the chaincode to a new version on `tradechannel`
+- __/chaincode/upgrade__: Install and upgrade the chaincode to a new version on `tradechannel`
   * _Method_: POST
   * _URL Parameters_: None
   * _Header_: `authorization: Bearer <JSON Web Token>`
@@ -200,6 +215,7 @@ In a terminal window:
 # Sample Instructions (Script)
 Pre-requisites:
 - Make sure you have `curl` installed in your system.
+- Make sure you have the initial 4-org [network](../ntwork/) up and running.
 
 In a terminal window:
 - __Register or log in an `admin` user to `importerorg` (IMPORTER organization)__
@@ -219,7 +235,7 @@ In a terminal window:
 
 - __Create the trade channel__
   ```
-  curl -s -X POST http://localhost:4000/channel/create -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM"
+  curl -s -X POST http://localhost:4000/channel/create -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM"
   ```
   * If this is successful, you should see something like:
   ```
@@ -229,7 +245,7 @@ In a terminal window:
 
 - __Join peers of the first 4 organizations to the trade channel__
   ```
-  curl -s -X POST http://localhost:4000/channel/join -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM"
+  curl -s -X POST http://localhost:4000/channel/join -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM"
   ```
   * If this is successful, you should see something like:
   ```
@@ -285,7 +301,7 @@ In a terminal window:
   ```
 
 
-- __Query the status of a trade request by an importer__
+- __Query the status of the trade request by an importer__
   ```
   curl -s -X GET http://localhost:4000/chaincode/getTradeStatus -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzUzODQsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6ImltcG9ydGVyb3JnIiwiaWF0IjoxNTI3MjMxMjQ0fQ.CfV7BCr-bKzP-hqpdvSjHnXqnms6f36lXhyUsTK8yTQ" -d '{ "ccversion": "v0", "args": ["2ks89j9"] }'
   ```
@@ -293,3 +309,58 @@ In a terminal window:
   ```
   {"success":true,"message":"{\"Status\":\"REQUESTED\"}"}
   ```
+
+
+- __Add a new organization (exporting entity) and its peer to the channel__
+  * Make sure you have the network peer and MSP for the new organization up and running.
+
+  * __Update the channel configuration and join a new peer to the network__
+    * Perform this operation as the `admin` user of `importerorg`, whose JWT token we already possess.
+    ```
+    curl -s -X POST http://localhost:4000/channel/addorg -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM"
+    ```
+    * If this is successful, you should see something like:
+    ```
+    {"success":true,"message":"New Organization and Peer Added to Channel"}
+    ```
+
+
+  * __Upgrade chaincode to accommodate the new organization__
+    * Perform this operation as the `admin` user of `importerorg`, whose JWT token we already possess.
+    ```
+    curl -s -X POST http://localhost:4000/chaincode/upgrade -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzQzMTgsInVzZXJuYW1lIjoiYWRtaW4iLCJvcmdOYW1lIjoiaW1wb3J0ZXJvcmciLCJpYXQiOjE1MjcyMzAxNzh9.nHTxkdFb1NlGaAunECtak25yn9hXxiuX686KoF9A8AM" -d '{ "ccpath": "github.com/trade_workflow_v1", "ccversion": "v1", "args": [] }'
+    ```
+    * If this is successful, you should see something like:
+    ```
+    {"success":true,"message":"New version of Chaincode installed and upgraded"}
+    ```
+
+
+  * __Invoke a trade request acceptance by an exporting entity__
+    * Register user `Tom` in `exportingentityorg` (EXPORTING ENTITY organization)
+    ```
+    curl -s -X POST http://localhost:4000/login -H "content-type: application/x-www-form-urlencoded" -d 'username=Tom&orgName=exportingentityorg'
+    ```
+    * If this is successful, you should see something like:
+    ```
+    {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyNTE3MzMsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6ImV4cG9ydGluZ2VudGl0eW9yZyIsImlhdCI6MTUyNzI0NzU5M30.HxuL744Mw77MxIlBIwfmgia4_y1YiqDNtIMJQhJFY84","success":true,"secret":"BQNqVfPYVfzu","message":"Registration successful"}
+    ```
+    * Run the invocation
+    ```
+    curl -s -X POST http://localhost:4000/chaincode/acceptTrade -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyNTE3MzMsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6ImV4cG9ydGluZ2VudGl0eW9yZyIsImlhdCI6MTUyNzI0NzU5M30.HxuL744Mw77MxIlBIwfmgia4_y1YiqDNtIMJQhJFY84" -d '{ "ccversion": "v1", "args": ["2ks89j9"] }'
+    ```
+    * If this is successful, you should see something like:
+    ```
+    {"success":true,"message":"Chaincode invoked"}
+    ```
+
+
+  * __Query the status of the trade request by an importer__
+    * We will query as user `Jim` in `importerorg` (whose JWT token we already possess)
+    ```
+    curl -s -X GET http://localhost:4000/chaincode/getTradeStatus -H "content-type: application/json" -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjcyMzUzODQsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6ImltcG9ydGVyb3JnIiwiaWF0IjoxNTI3MjMxMjQ0fQ.CfV7BCr-bKzP-hqpdvSjHnXqnms6f36lXhyUsTK8yTQ" -d '{ "ccversion": "v0", "args": ["2ks89j9"] }'
+    ```
+    * If this is successful, you should see something like:
+    ```
+    {"success":true,"message":"{\"Status\":\"ACCEPTED\"}"}
+    ```

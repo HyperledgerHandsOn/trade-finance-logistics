@@ -197,19 +197,4 @@ function upgradeChannel(channel_name, constants) {
 	});
 }
 
-upgradeChannel(Constants.CHANNEL_NAME).then(() => {
-	console.log('\n');
-	console.log('--------------------------');
-	console.log('CHANNEL UPGRADE COMPLETE');
-	console.log('--------------------------');
-	console.log('\n');
-}, (err) => {
-	console.log('\n');
-	console.log('-------------------------');
-	console.log('CHANNEL UPGRADE FAILED:', err);
-	console.log('-------------------------');
-	console.log('\n');
-	process.exit(1);
-});
-
 module.exports.upgradeChannel = upgradeChannel;
