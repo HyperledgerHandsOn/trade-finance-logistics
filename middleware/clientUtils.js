@@ -387,11 +387,11 @@ function getClientUser(userOrg, username, password) {
 	var client = new Client();
 
 	var cryptoSuite = Client.newCryptoSuite();
-	cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: ClientUtils.storePathForOrg(orgName)}));
+	cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: module.exports.storePathForOrg(orgName)}));
 	client.setCryptoSuite(cryptoSuite);
 
 	return Client.newDefaultKeyValueStore({
-		path: ClientUtils.storePathForOrg(orgName)
+		path: module.exports.storePathForOrg(orgName)
 	}).then((store) => {
 		if (store) {
 			client.setStateStore(store);
@@ -401,9 +401,9 @@ function getClientUser(userOrg, username, password) {
 			if (password !== 'adminpw') {
 				throw new Error('Invalid admin password');
 			}
-			return ClientUtils.getSubmitter(client, false, userOrg);
+			return module.exports.getSubmitter(client, false, userOrg);
 		} else {
-			return ClientUtils.getSubmitter(client, false, userOrg, username);
+			return module.exports.getSubmitter(client, false, userOrg, username);
 		}
 	});
 }
