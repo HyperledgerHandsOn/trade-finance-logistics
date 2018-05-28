@@ -18,47 +18,52 @@
 // in a happy-path scenario
 'use strict';
 
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E upgrade-chaincode');
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-var util = require('util');
-var path = require('path');
-var fs = require('fs');
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
+var ClientUtils = require('./clientUtils.js');
 var installCC = require('./install-chaincode.js');
 var instantiateCC = require('./instantiate-chaincode.js');
 
-// Install a chaincode, and upon success, attempt to upgrade it on the channel
-installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE_UPGRADE_VERSION).then(() => {
-	console.log('\n-------------------------');
-	console.log('NEW CHAINCODE INSTALL COMPLETE');
-	console.log('-------------------------\n');
+Constants.networkConfig = './config_upgrade.json';	// Use the augmented configuration
+Constants.TRANSACTION_ENDORSEMENT_POLICY = Constants.ALL_FIVE_ORG_MEMBERS;	// Use the updated endorsement policy
 
-	instantiateCC.instantiateOrUpgradeChaincode(
+// Install a chaincode, and upon success, attempt to upgrade it on the channel
+installCC.installChaincode(Constants.CHAINCODE_UPGRADE_PATH, Constants.CHAINCODE_UPGRADE_VERSION, Constants).then(() => {
+	console.log('\n');
+	console.log('--------------------------------');
+	console.log('NEW CHAINCODE INSTALL COMPLETE');
+	console.log('--------------------------------');
+	console.log('\n');
+
+	return instantiateCC.instantiateOrUpgradeChaincode(
 		Constants.IMPORTER_ORG,
 		Constants.CHAINCODE_UPGRADE_PATH,
 		Constants.CHAINCODE_UPGRADE_VERSION,
 		'init',
 		[],
-		true
-	).then(() => {
-		console.log('\n-----------------------------');
-		console.log('CHAINCODE UPGRADE COMPLETE');
-		console.log('-----------------------------\n');
-		sdkHelper.txEventsCleanup();
-	}, (err) => {
-		console.log('\n------------------------------');
-		console.log('CHAINCODE UPGRADE FAILED:', err);
-		console.log('-----------------------------\n');
-		process.exit(1);
-	})
+		true,
+		Constants
+	);
 }, (err) => {
-	console.log('\n-------------------------');
+	console.log('\n');
+	console.log('-----------------------------------');
 	console.log('NEW CHAINCODE INSTALL FAILED:', err);
-	console.log('-------------------------\n');
+	console.log('-----------------------------------');
+	console.log('\n');
+	process.exit(1);
+})
+.then(() => {
+	console.log('\n');
+	console.log('----------------------------');
+	console.log('CHAINCODE UPGRADE COMPLETE');
+	console.log('----------------------------');
+	console.log('\n');
+	ClientUtils.txEventsCleanup();
+}, (err) => {
+	console.log('\n');
+	console.log('------------------------------');
+	console.log('CHAINCODE UPGRADE FAILED:', err);
+	console.log('-----------------------------');
+	console.log('\n');
 	process.exit(1);
 });
 

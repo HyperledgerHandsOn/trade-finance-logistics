@@ -19,12 +19,12 @@ services:
       - FABRIC_CA_SERVER_CA_NAME=ca-exportingentityorg
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.exportingentityorg.trade.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f8ba99ff3c52cd8615e6b0cbc8e793ca9907b67e0a898f1e8d8ab724beb7217a_sk
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/EXPORTINGENTITY_CA_PRIVATE_KEY
     ports:
       - "11054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.exportingentityorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/f8ba99ff3c52cd8615e6b0cbc8e793ca9907b67e0a898f1e8d8ab724beb7217a_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.exportingentityorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/EXPORTINGENTITY_CA_PRIVATE_KEY -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/exportingentityorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../crypto-config/peerOrganizations/exportingentityorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca_peerExportingEntityOrg
     networks:
       - trade
@@ -42,8 +42,8 @@ services:
       - CORE_PEER_LOCALMSPID=ExportingEntityOrgMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ./crypto-config/peerOrganizations/exportingentityorg.trade.com/peers/peer0.exportingentityorg.trade.com/msp:/etc/hyperledger/fabric/msp
-        - ./crypto-config/peerOrganizations/exportingentityorg.trade.com/peers/peer0.exportingentityorg.trade.com/tls:/etc/hyperledger/fabric/tls
+        - ../crypto-config/peerOrganizations/exportingentityorg.trade.com/peers/peer0.exportingentityorg.trade.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/exportingentityorg.trade.com/peers/peer0.exportingentityorg.trade.com/tls:/etc/hyperledger/fabric/tls
         - peer0.exportingentityorg.trade.com:/var/hyperledger/production
     ports:
       - 11051:7051

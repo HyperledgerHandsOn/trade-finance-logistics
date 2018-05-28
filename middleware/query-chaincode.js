@@ -14,26 +14,24 @@
  *  limitations under the License.
  */
 
-// This is an end-to-end test that focuses on exercising all parts of the fabric APIs
-// in a happy-path scenario
 'use strict';
 
-var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var utils = require('fabric-client/lib/utils.js');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var Client = require('fabric-client');
 var ClientUtils = require('./clientUtils.js');
 
-function queryChaincode(userOrg, version, funcName, argList, userName) {
-	sdkHelper.init();
+//
+// Send chaincode query request to the peer
+//
+function queryChaincode(userOrg, version, funcName, argList, userName, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	Client.setConfigSetting('request-timeout', 60000);
@@ -74,7 +72,13 @@ function queryChaincode(userOrg, version, funcName, argList, userName) {
 		client.setStateStore(store);
 		return ClientUtils.getSubmitter(client, false, userOrg, userName);
 
-	}).then((admin) => {
+	}).then((user) => {
+		if (userName) {
+			console.log('Successfully enrolled user', userName);
+		} else {
+			console.log('Successfully enrolled user \'admin\'');
+		}
+
 		// send query
 		var request = {
 			chaincodeId : Constants.CHAINCODE_ID,
@@ -85,8 +89,14 @@ function queryChaincode(userOrg, version, funcName, argList, userName) {
 		return channel.queryByChaincode(request);
 	},
 	(err) => {
-		console.log('Failed to get submitter \'admin\'. Error: ' + err.stack ? err.stack : err );
-		throw new Error('Failed to get submitter');
+		var errMesg = 'Failed to get submitter ';
+		if (userName) {
+			errMesg = errMesg + userName + '. Error: ' + err;
+		} else {
+			errMesg = errMesg + 'admin. Error: ' + err;
+		}
+		console.log(errMesg);
+		throw new Error(errMesg);
 	}).then((response_payloads) => {
 		if (response_payloads) {
 			var value = '';

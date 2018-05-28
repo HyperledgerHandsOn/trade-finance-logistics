@@ -16,14 +16,13 @@
 'use strict';
 
 var Constants = require('./constants.js');
-var sdkHelper = require('./sdkHelper.js');
+var ClientUtils = require('./clientUtils.js');
 var createChannel = require('./create-channel.js');
 var joinChannel = require('./join-channel.js');
 var installCC = require('./install-chaincode.js');
 var instantiateCC = require('./instantiate-chaincode.js');
 var invokeCC = require('./invoke-chaincode.js');
 var queryCC = require('./query-chaincode.js');
-//var upgradeCC = require('./upgrade-chaincode.js');
 
 
 // Create a channel using the given network configuration
@@ -91,9 +90,9 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('CHAINCODE INSTANTIATE COMPLETE');
 	console.log('-------------------------------');
 	console.log('\n');
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 
-	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys']);
+	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys'], 'Importer');
 }, (err) => {
 	console.log('\n');
 	console.log('------------------------------');
@@ -110,7 +109,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('------------------------------');
 	console.log('\n');
 
-	return queryCC.queryChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9']);
+	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Exporter');
 }, (err) => {
 	console.log('\n');
 	console.log('-----------------------------');
@@ -127,7 +126,7 @@ createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('VALUE:', result);
 	console.log('-------------------------');
 	console.log('\n');
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 }, (err) => {
 	console.log('\n');
 	console.log('------------------------');
@@ -149,5 +148,5 @@ process.on('unhandledRejection', err => {
 
 process.on('exit', () => {
 	joinChannel.joinEventsCleanup();
-	sdkHelper.txEventsCleanup();
+	ClientUtils.txEventsCleanup();
 });

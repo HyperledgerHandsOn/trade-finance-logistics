@@ -14,28 +14,29 @@
  *  limitations under the License.
  */
 
-// This is an end-to-end test that focuses on exercising all parts of the fabric APIs
-// in a happy-path scenario
 'use strict';
+
+var utils = require('fabric-client/lib/utils.js');
+var logger = utils.getLogger('E2E instantiate-chaincode');
 
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E instantiate-chaincode');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var Client = require('fabric-client');
 var ClientUtils = require('./clientUtils.js');
 
-// If 'userName' is not specified, default to 'admin' for the org 'userOrg'
-function invokeChaincode(userOrg, version, funcName, argList, userName) {
-	sdkHelper.init();
+//
+// Send chaincode invocation request to the orderer
+//
+// If 'userName' is not specified, we will default to 'admin' for the org 'userOrg'
+function invokeChaincode(userOrg, version, funcName, argList, userName, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	logger.debug('invokeChaincode begin');
@@ -44,10 +45,6 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 
 	var targets = [];
 
-	// this is a transaction, will just use org's identity to
-	// submit the request. intentionally we are using a different org
-	// than the one that instantiated the chaincode, although either org
-	// should work properly
 	var client = new Client();
 	var channel = client.newChannel(channel_name);
 	var tx_id = null;
@@ -78,9 +75,13 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			client.setStateStore(store);
 		}
 		return ClientUtils.getSubmitter(client, false, userOrg, userName);
-	}).then((admin) => {
+	}).then((user) => {
 
-		console.log('Successfully enrolled user \'admin\'');
+		if (userName) {
+			console.log('Successfully enrolled user', userName);
+		} else {
+			console.log('Successfully enrolled user \'admin\'');
+		}
 
 		// set up the channel to use each org's 'peer1' for
 		// both requests and events
@@ -111,7 +112,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			}
 		);
 		eh.connect();
-		sdkHelper.eventhubs.push(eh);
+		ClientUtils.eventhubs.push(eh);
 
 		return channel.initialize();
 
@@ -132,9 +133,14 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 		return channel.sendTransactionProposal(request);
 
 	}, (err) => {
-
-		console.log('Failed to enroll user \'admin\'. ' + err);
-		throw new Error('Failed to enroll user \'admin\'. ' + err);
+		var errMesg = 'Failed to get submitter ';
+		if (userName) {
+			errMesg = errMesg + userName + '. Error: ' + err;
+		} else {
+			errMesg = errMesg + 'admin. Error: ' + err;
+		}
+		console.log(errMesg);
+		throw new Error(errMesg);
 	}).then((results) =>{
 		var proposalResponses = results[0];
 		console.log('Received', proposalResponses.length, 'responses for proposed transaction');
@@ -177,12 +183,11 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			};
 
 			// set the transaction listener and set a timeout of 30sec
-			// if the transaction did not get committed within the timeout period,
-			// fail the test
+			// if the transaction did not get committed within the timeout period, fail
 			var deployId = tx_id.getTransactionID();
 
 			var eventPromises = [];
-			sdkHelper.eventhubs.forEach((eh) => {
+			ClientUtils.eventhubs.forEach((eh) => {
 				let txPromise = new Promise((resolve, reject) => {
 					let handle = setTimeout(reject, 300000);
 
@@ -214,7 +219,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName) {
 			return Promise.all([sendPromise].concat(eventPromises))
 			.then((results) => {
 
-				logger.debug(' event promise all complete and testing complete');
+				logger.debug(' transaction and event promises all complete');
 				return results[0]; // the first returned value is from the 'sendPromise' which is from the 'sendTransaction()' call
 
 			}).catch((err) => {

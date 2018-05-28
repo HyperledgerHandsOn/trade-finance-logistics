@@ -14,23 +14,17 @@
  *  limitations under the License.
  */
 
+var utils = require('fabric-client/lib/utils.js');
+var logger = utils.getLogger('ClientUtils');
+
 var path = require('path');
 var fs = require('fs-extra');
-var os = require('os');
 var util = require('util');
-
-var jsrsa = require('jsrsasign');
-var KEYUTIL = jsrsa.KEYUTIL;
 
 var Client = require('fabric-client');
 var copService = require('fabric-ca-client/lib/FabricCAClientImpl.js');
 var User = require('fabric-client/lib/User.js');
-var CryptoSuite = require('fabric-client/lib/impl/CryptoSuite_ECDSA_AES.js');
-var KeyStore = require('fabric-client/lib/impl/CryptoKeyStore.js');
-var ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 var Constants = require('./constants.js');
-
-var logger = require('fabric-client/lib/utils.js').getLogger('ClientUtils');
 
 // all temporary files and directories are created under here
 var tempdir = Constants.tempdir;
@@ -85,8 +79,16 @@ module.exports.existsSync = function(absolutePath /*string*/) {
 
 module.exports.readFile = readFile;
 
-Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
-var ORGS = Client.getConfigSetting(Constants.networkId);
+var ORGS = {};
+
+module.exports.init = function(constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
+	ORGS = Client.getConfigSetting(Constants.networkId);
+};
+
 
 var	tlsOptions = {
 	trustedRoots: [],
@@ -290,7 +292,6 @@ function getAdmin(client, userOrg) {
 
 function getOrdererMSPId() {
 	Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
-	ORGS = Client.getConfigSetting(Constants.networkId);
 	return ORGS['orderer'].mspid;
 }
 
@@ -366,3 +367,57 @@ module.exports.getSubmitter = function(client, peerOrgAdmin, org, username) {
 		return getMember('admin', 'adminpw', client, userOrg);
 	}
 };
+
+var eventhubs = [];
+module.exports.eventhubs = eventhubs;
+
+function getClientUser(userOrg, username, password) {
+	if (ORGS[userOrg] === null || ORGS[userOrg] === undefined) {
+		return new Promise((resolve, reject) => {
+			return reject('Unknown org: ' + userOrg);
+		});
+	}
+	var orgName = ORGS[userOrg].name;
+	var client = new Client();
+
+	var cryptoSuite = Client.newCryptoSuite();
+	cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: module.exports.storePathForOrg(orgName)}));
+	client.setCryptoSuite(cryptoSuite);
+
+	return Client.newDefaultKeyValueStore({
+		path: module.exports.storePathForOrg(orgName)
+	}).then((store) => {
+		if (store) {
+			client.setStateStore(store);
+		}
+		// Hack/shortcut to enroll an admin user
+		if (username === 'admin') {
+			if (password !== 'adminpw') {
+				throw new Error('Invalid admin password');
+			}
+			return module.exports.getSubmitter(client, false, userOrg);
+		} else {
+			return module.exports.getSubmitter(client, false, userOrg, username);
+		}
+	});
+}
+
+module.exports.getClientUser = getClientUser;
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+module.exports.sleep = sleep;
+
+function cleanup() {
+	for(var key in eventhubs) {
+		var eventhub = eventhubs[key];
+		if (eventhub && eventhub.isconnected()) {
+			logger.debug('Disconnecting the event hub');
+			eventhub.disconnect();
+		}
+	}
+}
+
+module.exports.txEventsCleanup = cleanup;

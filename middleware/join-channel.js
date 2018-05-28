@@ -16,11 +16,7 @@
 'use strict';
 
 var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E join-channel');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
+var logger = utils.getLogger('join-channel');
 
 var util = require('util');
 var path = require('path');
@@ -28,7 +24,6 @@ var fs = require('fs');
 
 var Client = require('fabric-client');
 
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 
@@ -39,7 +34,12 @@ var allEventhubs = [];
 //
 // Send join requests for all peers in our network to the orderer
 //
-function processJoinChannel() {
+function processJoinChannel(constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
 	var ORGS = Client.getConfigSetting(Constants.networkId);
 	var PEER_ORGS = [];
@@ -67,7 +67,12 @@ function processJoinChannel() {
 	});
 }
 
-function joinChannel(org, ORGS) {
+function joinChannel(org, ORGS, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
 	console.log('Joining channel', channel_name);
 

@@ -15,28 +15,22 @@
  */
 'use strict';
 
-var path = require('path');
-
-var Client = require('fabric-client');
 var Constants = require('./constants.js');
-var joinChannel = require('./join-channel.js');
+var upgradeChannel = require('./upgrade-channel.js');
 
-Constants.networkConfig = './config_upgrade.json';	// Use the augmented configuration
-Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
-var ORGS = Client.getConfigSetting(Constants.networkId);
-
-joinChannel.joinChannel('exportingentityorg', ORGS, Constants).then(() => {
+upgradeChannel.upgradeChannel(Constants.CHANNEL_NAME).then(() => {
 	console.log('\n');
-	console.log('----------------------------------');
-	console.log('CHANNEL JOIN FOR NEW ORG COMPLETE');
-	console.log('----------------------------------');
+	console.log('--------------------------');
+	console.log('CHANNEL UPGRADE COMPLETE');
+	console.log('--------------------------');
 	console.log('\n');
-	joinChannel.joinEventsCleanup();
 }, (err) => {
 	console.log('\n');
-	console.log('----------------------------------');
-	console.log('CHANNEL JOIN FOR NEW ORG FAILED:', err);
-	console.log('----------------------------------');
+	console.log('-------------------------');
+	console.log('CHANNEL UPGRADE FAILED:', err);
+	console.log('-------------------------');
 	console.log('\n');
 	process.exit(1);
 });
+
+module.exports.upgradeChannel = upgradeChannel;
