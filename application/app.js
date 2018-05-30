@@ -17,8 +17,6 @@
 var log4js = require('log4js');
 var logger = log4js.getLogger('TradeApp');
 var express = require('express');
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var http = require('http');
 var util = require('util');
@@ -27,15 +25,17 @@ var expressJWT = require('express-jwt');
 var jwt = require('jsonwebtoken');
 var bearerToken = require('express-bearer-token');
 var cors = require('cors');
+var path = require('path');
 
 var Constants = require('../middleware/constants.js');
-var sdkHelper = require('../middleware/sdkHelper.js');
+var ClientUtils = require('../middleware/clientUtils.js');
 var createChannel = require('../middleware/create-channel.js');
 var joinChannel = require('../middleware/join-channel.js');
 var installCC = require('../middleware/install-chaincode.js');
 var instantiateCC = require('../middleware/instantiate-chaincode.js');
 var invokeCC = require('../middleware/invoke-chaincode.js');
 var queryCC = require('../middleware/query-chaincode.js');
+var upgradeChannel = require('../middleware/upgrade-channel.js');
 
 var host = process.env.HOST || 'localhost';
 var port = process.env.PORT || 4000;
@@ -130,7 +130,9 @@ app.post('/login', async function(req, res) {
 		username: username,
 		orgName: orgName
 	}, app.get('secret'));
-	sdkHelper.getClientUser(orgName, username, password)
+
+	ClientUtils.init();
+	ClientUtils.getClientUser(orgName, username, password)
 	.then((response) => {
 		logger.debug('-- returned from registering (logging in) the username %s for organization %s',username,orgName);
 		if (response && typeof response !== 'string') {
@@ -162,6 +164,7 @@ app.post('/login', async function(req, res) {
 	});
 
 });
+
 // Create Channel
 app.post('/channel/create', async function(req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< C R E A T E  C H A N N E L >>>>>>>>>>>>>>>>>');
@@ -170,18 +173,14 @@ app.post('/channel/create', async function(req, res) {
 		res.send('Not an admin user: ' + req.username);
 		return;
 	}
-	var channelName = req.body.channelName;
-	logger.debug('Channel name : ' + channelName);
-	if (!channelName) {
-		res.json(getErrorMessage('\'channelName\''));
-		return;
-	}
-	createChannel.createChannel(channelName).then(() => {
+
+	createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
 		res.json({success: true, message: 'Channel created'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
 });
+
 // Join Channel
 app.post('/channel/join', async function(req, res) {
 	logger.info('<<<<<<<<<<<<<<<<< J O I N  C H A N N E L >>>>>>>>>>>>>>>>>');
@@ -199,6 +198,33 @@ app.post('/channel/join', async function(req, res) {
 		res.json({success: false, message: err.message});
 	});
 });
+
+// Add an Organization and Peer to the Channel
+app.post('/channel/addorg', async function(req, res) {
+	logger.info('<<<<<<<<<<<<<<<<< A D D  O R G  A N D  P E E R  T O  C H A N N E L >>>>>>>>>>>>>>>>>');
+	if (req.username !== 'admin') {
+		res.statusCode = 403;
+		res.send('Not an admin user: ' + req.username);
+		return;
+	}
+
+	// Update the channel configuration, and then join the new org's peer to the channel
+	upgradeChannel.upgradeChannel(Constants.CHANNEL_NAME).then(() => {
+		// Update the configuration settings
+		Constants.networkConfig = '../middleware/config_upgrade.json';
+		var Client = require('fabric-client');
+		Client.addConfigFile(path.join(__dirname, Constants.networkConfig));
+		var ORGS = Client.getConfigSetting(Constants.networkId);
+		return joinChannel.joinChannel('exportingentityorg', ORGS, Constants);
+	}, (err) => {
+		res.json({success: false, message: err.message});
+	}).then(() => {
+		res.json({success: true, message: 'New Organization and Peer Added to Channel'});
+	}, (err) => {
+		res.json({success: false, message: err.message});
+	});
+});
+
 // Install chaincode on target peers
 app.post('/chaincode/install', async function(req, res) {
 	logger.debug('==================== INSTALL CHAINCODE ==================');
@@ -210,13 +236,24 @@ app.post('/chaincode/install', async function(req, res) {
 		return;
 	}
 
-	installCC.installChaincode(Constants.CHAINCODE_PATH, Constants.CHAINCODE_VERSION).then(() => {
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+	installCC.installChaincode(ccpath, ccversion).then(() => {
 		res.json({success: true, message: 'Chaincode installed'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
 });
-// Instantiate chaincode on target peers
+
+// Instantiate chaincode on channel
 app.post('/chaincode/instantiate', async function(req, res) {
 	logger.debug('==================== INSTANTIATE CHAINCODE ==================');
 	logger.debug('username :' + req.username);
@@ -227,6 +264,16 @@ app.post('/chaincode/instantiate', async function(req, res) {
 		return;
 	}
 
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
 	var args = req.body.args;
 	if (!args) {
 		res.json(getErrorMessage('\'args\''));
@@ -234,25 +281,72 @@ app.post('/chaincode/instantiate', async function(req, res) {
 	}
 	logger.debug('args  : ' + args);
 
-	instantiateCC.instantiateOrUpgradeChaincode(
-		Constants.IMPORTER_ORG,
-		Constants.CHAINCODE_PATH,
-		Constants.CHAINCODE_VERSION,
-		'init',
-		['LumberInc', 'LumberBank', '100000', 'WoodenToys', 'ToyBank', '200000', 'UniversalFrieght', 'ForestryDepartment'],
-		false
-	).then(() => {
-		sdkHelper.txEventsCleanup();
+	instantiateCC.instantiateOrUpgradeChaincode(req.orgname, ccpath, ccversion, 'init', args, false)
+	.then(() => {
 		res.json({success: true, message: 'Chaincode instantiated'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
+	ClientUtils.txEventsCleanup();
 });
-// Invoke transaction on chaincode on target peers
+
+// Install new chaincode version on network peers and upgrade it on the channel
+app.post('/chaincode/upgrade', async function(req, res) {
+	logger.debug('==================== UPGRADE CHAINCODE ==================');
+	logger.debug('username :' + req.username);
+	logger.debug('orgname:' + req.orgname);
+	if (req.username !== 'admin') {
+		res.statusCode = 403;
+		res.send('Not an admin user: ' + req.username);
+		return;
+	}
+
+	var ccpath = req.body.ccpath;
+	if (!ccpath) {
+		res.json(getErrorMessage('\'ccpath\''));
+		return;
+	}
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+	var args = req.body.args;
+	if (!args) {
+		res.json(getErrorMessage('\'args\''));
+		return;
+	}
+	logger.debug('args  : ' + args);
+
+	// Update the configuration settings
+	Constants.networkConfig = '../middleware/config_upgrade.json';
+	Constants.TRANSACTION_ENDORSEMENT_POLICY = Constants.ALL_FIVE_ORG_MEMBERS;
+
+	// Install and then upgrade the chaincode
+	installCC.installChaincode(ccpath, ccversion, Constants).then(() => {
+		return instantiateCC.instantiateOrUpgradeChaincode(req.orgname, ccpath, ccversion, 'init', args, true, Constants);
+	}, (err) => {
+		res.json({success: false, message: err.message});
+	}).then(() => {
+		res.json({success: true, message: 'New version of Chaincode installed and upgraded'});
+	}, (err) => {
+		res.json({success: false, message: err.message});
+	});
+	ClientUtils.txEventsCleanup();
+});
+
+// Invoke transaction on chaincode on network peers
 app.post('/chaincode/:fcn', async function(req, res) {
 	logger.debug('==================== INVOKE ON CHAINCODE ==================');
 	logger.debug('username :' + req.username);
 	logger.debug('orgname:' + req.orgname);
+
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+
 	var fcn = req.params.fcn;
 	var args = req.body.args;
 	if (!fcn) {
@@ -265,18 +359,26 @@ app.post('/chaincode/:fcn', async function(req, res) {
 	}
 	logger.debug('args  : ' + args);
 
-	invokeCC.invokeChaincode(req.orgname, Constants.CHAINCODE_VERSION, fcn, args, req.username).then(() => {
-		sdkHelper.txEventsCleanup();
+	invokeCC.invokeChaincode(req.orgname, ccversion, fcn, args, req.username).then(() => {
 		res.json({success: true, message: 'Chaincode invoked'});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
+	ClientUtils.txEventsCleanup();
 });
-// Query on chaincode on target peers
+
+// Query on chaincode on network peers
 app.get('/chaincode/:fcn', async function(req, res) {
 	logger.debug('==================== QUERY BY CHAINCODE ==================');
 	logger.debug('username :' + req.username);
 	logger.debug('orgname:' + req.orgname);
+
+	var ccversion = req.body.ccversion;
+	if (!ccversion) {
+		res.json(getErrorMessage('\'ccversion\''));
+		return;
+	}
+
 	var fcn = req.params.fcn;
 	var args = req.body.args;
 	if (!fcn) {
@@ -289,10 +391,10 @@ app.get('/chaincode/:fcn', async function(req, res) {
 	}
 	logger.debug('args  : ' + args);
 
-	queryCC.queryChaincode(req.orgname, Constants.CHAINCODE_VERSION, fcn, args).then((result) => {
-		sdkHelper.txEventsCleanup();
+	queryCC.queryChaincode(req.orgname, ccversion, fcn, args).then((result) => {
 		res.json({success: true, message: result});
 	}, (err) => {
 		res.json({success: false, message: err.message});
 	});
+	ClientUtils.txEventsCleanup();
 });

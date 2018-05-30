@@ -166,7 +166,9 @@ function newOrgNetworkUp () {
   fi
 }
 
-# Upgrade the network from v1.0.x to v1.1
+# Upgrade the network from one version to another
+# If the new image tag (now in the IMAGETAG variable) is not passed in the command line using the "-i" switch:
+# 	this assumes that the new iamge has already been tagged with "latest".
 # Stop the orderer and peers, backup the ledger from orderer and peers, cleanup chaincode containers and images
 # and relaunch the orderer and peers with latest tag
 function upgradeNetwork () {
@@ -187,7 +189,7 @@ function upgradeNetwork () {
   echo "Upgrading orderer"
   docker-compose $COMPOSE_FILES stop orderer.trade.com
   docker cp -a orderer.trade.com:/var/hyperledger/production/orderer $LEDGERS_BACKUP/orderer.trade.com
-  docker-compose $COMPOSE_FILES up -d --no-deps orderer.trade.com
+  docker-compose $COMPOSE_FILES up --no-deps orderer.trade.com
 
   for PEER in peer0.exporterorg.trade.com peer0.importerorg.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com; do
     echo "Upgrading peer $PEER"
@@ -207,7 +209,7 @@ function upgradeNetwork () {
     fi
 
     # Start the peer again
-    docker-compose $COMPOSE_FILES up -d --no-deps $PEER
+    docker-compose $COMPOSE_FILES up --no-deps $PEER
   done
 }
 

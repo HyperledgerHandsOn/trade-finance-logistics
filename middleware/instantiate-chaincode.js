@@ -14,26 +14,22 @@
  *  limitations under the License.
  */
 
-// This is an end-to-end test that focuses on exercising all parts of the fabric APIs
-// in a happy-path scenario
 'use strict';
+
+var utils = require('fabric-client/lib/utils.js');
+var logger = utils.getLogger('instantiate-chaincode');
 
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var utils = require('fabric-client/lib/utils.js');
-var logger = utils.getLogger('E2E instantiate-chaincode');
-
-var tape = require('tape');
-var _test = require('tape-promise');
-var test = _test(tape);
-
 var Client = require('fabric-client');
-var sdkHelper = require('./sdkHelper.js');
 var Constants = require('./constants.js');
 var ClientUtils = require('./clientUtils.js');
 
+//
+// Construct instantiation or upgrade proposal
+//
 function buildChaincodeProposal(client, user_handle, chaincode_path, version, funcName, argList) {
 	var tx_id = client.newTransactionID();
 
@@ -51,8 +47,15 @@ function buildChaincodeProposal(client, user_handle, chaincode_path, version, fu
 	return request;
 }
 
-function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcName, argList, upgrade){
-	sdkHelper.init();
+//
+// Send request for chaincode instantiation on the channel to the orderer
+//
+function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcName, argList, upgrade, constants) {
+	if (constants) {
+		Constants = constants;
+	}
+	ClientUtils.init(Constants);
+
 	var ORGS = JSON.parse(fs.readFileSync(path.join(__dirname, Constants.networkConfig)))[Constants.networkId];
 
 	var channel_name = Client.getConfigSetting('E2E_CONFIGTX_CHANNEL_NAME', Constants.CHANNEL_NAME);
@@ -127,7 +130,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 			}
 		);
 		eh.connect();
-		sdkHelper.eventhubs.push(eh);
+		ClientUtils.eventhubs.push(eh);
 
 		// read the config block from the orderer for the channel
 		// and initialize the verify MSPs based on the participating
@@ -190,12 +193,11 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 			};
 
 			// set the transaction listener and set a timeout of 30sec
-			// if the transaction did not get committed within the timeout period,
-			// fail the test
+			// if the transaction did not get committed within the timeout period, fail
 			var deployId = tx_id.getTransactionID();
 
 			var eventPromises = [];
-			sdkHelper.eventhubs.forEach((eh) => {
+			ClientUtils.eventhubs.forEach((eh) => {
 				let txPromise = new Promise((resolve, reject) => {
 					let handle = setTimeout(reject, 300000);
 
@@ -221,7 +223,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 			return Promise.all([sendPromise].concat(eventPromises))
 			.then((results) => {
 
-				logger.debug('Event promise all complete and testing complete');
+				logger.debug('Transaction and event promises all complete');
 				return results[0]; // just first results are from orderer, the rest are from the peer events
 
 			}).catch((err) => {
