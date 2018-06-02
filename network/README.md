@@ -16,10 +16,10 @@ Our application code is based on the current Hyperledger Fabric release version 
 - Make sure you have `docker` and `docker-compose` tools installed on your system.
 - Make sure you have `go` installed on your system.
   * Select a workspace directory where you want to store your go projects
-  * Set the GOPATH environment variable to that directory
-    (e.g. export GOPATH=$HOME/go)
-- Make sure you are using GNU Tar (On Mac OSX):
-  brew install gnu-tar --with-default-names
+  * Set the `GOPATH` environment variable to that directory
+    (e.g. `export GOPATH=$HOME/go`)
+- Make sure you are using GNU Tar (For Mac OSX):
+  `brew install gnu-tar --with-default-names`
 - Download and build [Fabric](https://github.com/hyperledger/fabric/):
   * `mkdir -p $GOPATH/src/github.com/hyperledger`
   * `cd $GOPATH/src/github.com/hyperledger`
