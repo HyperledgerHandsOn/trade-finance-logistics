@@ -86,8 +86,8 @@ The following files and folders should be created:
 - `add_org/docker-compose-exportingEntityOrg.yaml`: network configuration file to launch using the `docker-compose` tool.
 
 # Launch the Network Components of the New Organization
-**Note:** if your network has been stop, first start it using `./trade.sh up`
-Run `./trade.sh startneworg`
+**Note:** if your network has been stop, first start it using `./trade.sh up`  
+Run `./trade.sh startneworg`  
 - This runs the network as a background process, and logs the output to `logs/network-neworg.log`.
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f add_org/docker-compose-exportingEntityOrg.yaml up`.
 - You can view the network logs (from all the containers) in the foreground.
