@@ -3,13 +3,14 @@ ROOT_DIR=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 DIST_DIR=$(ROOT_DIR)/dist
 
 # CHAINCODE RELATED DEFINITIONS
-CC=trade_workflow_v1
-CC_SHIM=github.com/hyperledger/fabric/core/chaincode/shim
-CC_PATH=$(ROOT_DIR)/chaincode/src/github.com/$(CC)
+ifdef VER
+	VERSION =_$(VER)
+endif
+CC=trade_workflow$(VERSION)
+CC_PATH=$(ROOT_DIR)/chaincode
 
-CC_LOAD_DEP_CMD=go get -u --tags nopkcs11 $(CC_SHIM)
-CC_BUILD_CMD=$(CC_LOAD_DEP_CMD);go build --tags nopkcs11 -o /dist/$(CC)
-CC_UNITTEST_CMD=$(CC_LOAD_DEP_CMD);go test --tags nopkcs11
+CC_BUILD_CMD=go build -o /go/src/$(CC) --tags nopkcs11 github.com/$(CC);cp /go/src/$(CC) /dist/$(CC)
+CC_UNITTEST_CMD=go test --tags nopkcs11
 
 # COMPOSER RELATED DEFINITIONS
 COMPOSER_PATH=$(ROOT_DIR)/composer
@@ -29,12 +30,12 @@ test: chaincode_test composer_test
 .PHONY: chaincode
 chaincode:
 	echo ">> Building chaincode within Docker container"
-	docker run --rm -v $(CC_PATH):/src -v $(DIST_DIR):/dist -w /src golang:1.9.6 sh -c "$(CC_BUILD_CMD)"
+	docker run --rm -v $(CC_PATH):/go -v $(DIST_DIR):/dist -w /go golang:1.9.6 sh -c "$(CC_BUILD_CMD)"
 
 .PHONY: chaincode_test
 chaincode_test:
 	echo ">> Execute unit-tests for chaincode within Docker container"
-	docker run --rm -v $(CC_PATH):/src -w /src golang:1.9.6 sh -c "$(CC_UNITTEST_CMD)"
+	docker run --rm -v $(CC_PATH):/go -w /go/src/github.com/$(CC) golang:1.9.6 sh -c "$(CC_UNITTEST_CMD)"
 
 .PHONY: composer
 composer:

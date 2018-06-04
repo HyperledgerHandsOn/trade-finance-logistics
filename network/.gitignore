@@ -1,5 +1,6 @@
 docker-compose-e2e.yaml
 channel-artifacts
 crypto-config
+client-certs
 logs
 add_org/docker-compose-exportingEntityOrg.yaml

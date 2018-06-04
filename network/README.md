@@ -14,10 +14,21 @@ the nodes themselves (peers and orderers) are connected in a blockchain network 
 # Prerequisites to Configure and Launch the Network
 Our application code is based on the current Hyperledger Fabric release version (`release-1.1` branch.)
 - Make sure you have `docker` and `docker-compose` tools installed on your system.
+- Make sure you have `go` installed on your system.
+  * Select a workspace directory where you want to store your go projects
+  * Set the `GOPATH` environment variable to that directory
+    (e.g. `export GOPATH=$HOME/go`)
+- Make sure you are using GNU Tar (For Mac OSX):
+  `brew install gnu-tar --with-default-names`
 - Download and build [Fabric](https://github.com/hyperledger/fabric/):
+  * `mkdir -p $GOPATH/src/github.com/hyperledger`
+  * `cd $GOPATH/src/github.com/hyperledger`
   * `git clone https://github.com/hyperledger/fabric/`
+  * `cd fabric`
   * If the default branch is not `release-1.1`, append `-b release-1.1` to the above command
   * Run `make configtxgen cryptogen configtxlator` to build the tools we will use to create configuration files.
+    * Binaries can be found under `build/bin`
+    * Either move the binaries to a path such as `/usr/local/bin` or add the `$GOPATH/src/github.com/hyperledger/fabric/build/bin` to the PATH environment variable.
   * Run `make docker` to build docker images for the various network components from the downloaded source code.
 - Download and build [Fabric-CA](https://github.com/hyperledger/fabric-ca/):
   * `git clone https://github.com/hyperledger/fabric-ca/` (`release-1.1` branch as above)
@@ -47,6 +58,8 @@ Run `./trade.sh up`
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f docker-compose-e2e.yaml up`.
 - You can view the network logs (from all the containers) in the foreground.
 
+** NOTE:** If testing the middleware or application deployment, stop here, middleware and application instruction will indicate when/how to start additional organization.  
+  
 # Bring Down the Network
 Run `./trade.sh down`
 - If you ran the full application using instructions in [middleware](../middleware/) and [application](../application/), and if you still uncleared docker containers upon running `docker ps -a`:
@@ -75,7 +88,8 @@ The following files and folders should be created:
 - `add_org/docker-compose-exportingEntityOrg.yaml`: network configuration file to launch using the `docker-compose` tool.
 
 # Launch the Network Components of the New Organization
-Run `./trade.sh startneworg`
+**Note:** if your network has been stop, first start it using `./trade.sh up`  
+Run `./trade.sh startneworg`  
 - This runs the network as a background process, and logs the output to `logs/network-neworg.log`.
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f add_org/docker-compose-exportingEntityOrg.yaml up`.
 - You can view the network logs (from all the containers) in the foreground.

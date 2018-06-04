@@ -31,20 +31,26 @@
 export PATH=${PWD}/../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}
 
+# By default we standup a full network.
+DEV_MODE=false
+
 # Print the usage message
 function printHelp () {
   echo "Usage: "
-  echo "  trade.sh up|down|restart|generate|upgrade|createneworg|startneworg|stopneworg [-c <channel name>] [-f <docker-compose-file>] [-i <imagetag>] [-o <logfile>]"
+  echo "  trade.sh up|down|restart|generate|reset|clean|upgrade|createneworg|startneworg|stopneworg [-c <channel name>] [-f <docker-compose-file>] [-i <imagetag>] [-o <logfile>] [-dev]"
   echo "  trade.sh -h|--help (print this message)"
   echo "    <mode> - one of 'up', 'down', 'restart' or 'generate'"
   echo "      - 'up' - bring up the network with docker-compose up"
   echo "      - 'down' - clear the network with docker-compose down"
   echo "      - 'restart' - restart the network"
   echo "      - 'generate' - generate required certificates and genesis block"
+  echo "      - 'reset' - delete chaincode containers while keeping network artifacts" 
+  echo "      - 'clean' - delete network artifacts" 
   echo "      - 'upgrade'  - upgrade the network from v1.0.x to v1.1"
   echo "    -c <channel name> - channel name to use (defaults to \"tradechannel\")"
   echo "    -f <docker-compose-file> - specify which docker-compose file use (defaults to docker-compose-e2e.yaml)"
   echo "    -i <imagetag> - the tag to be used to launch the network (defaults to \"latest\")"
+  echo "    -d - Apply command to the network in dev mode."
   echo
   echo "Typically, one would first generate the required certificates and "
   echo "genesis block, then bring up the network. e.g.:"
@@ -59,6 +65,16 @@ function printHelp () {
   echo "	trade.sh generate"
   echo "	trade.sh up"
   echo "	trade.sh down"
+}
+
+# Keeps pushd silent
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+# Keeps popd silent
+popd () {
+    command popd "$@" > /dev/null
 }
 
 # Ask user for confirmation to proceed
@@ -125,6 +141,11 @@ function checkPrereqs() {
 # Generate the needed certificates, the genesis block and start the network.
 function networkUp () {
   checkPrereqs
+  # If we are in dev mode, we move to the devmode directory
+  if [ "$DEV_MODE" = true ] ; then
+     pushd ./devmode
+     export FABRIC_CFG_PATH=${PWD}
+  fi
   # generate artifacts if they don't exist
   if [ ! -d "crypto-config" ]; then
     generateCerts
@@ -138,6 +159,12 @@ function networkUp () {
     mkdir -p $LOG_DIR
   fi
   IMAGE_TAG=$IMAGETAG docker-compose -f $COMPOSE_FILE up >$LOG_FILE 2>&1 &
+
+  if [ "$DEV_MODE" = true ] ; then
+     popd
+     export FABRIC_CFG_PATH=${PWD}
+  fi
+
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to start network"
     exit 1
@@ -215,6 +242,11 @@ function upgradeNetwork () {
 
 # Bring down running network
 function networkDown () {
+  # If we are in dev mode, we move to the devmode directory
+  if [ "$DEV_MODE" = true ] ; then
+     pushd ./devmode
+  fi
+
   docker-compose -f $COMPOSE_FILE down --volumes
 
   for PEER in peer0.exporterorg.trade.com peer0.importerorg.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com; do
@@ -224,6 +256,10 @@ function networkDown () {
       docker rm -f $CC_CONTAINERS
     fi
   done
+
+  if [ "$DEV_MODE" = true ] ; then
+     popd
+  fi
 }
 
 # Bring down running network components of the new org
@@ -245,10 +281,19 @@ function networkClean () {
   clearContainers
   #Cleanup images
   removeUnwantedImages
+  # If we are in dev mode, we move to the devmode directory
+  if [ "$DEV_MODE" = true ] ; then
+     pushd ./devmode
+  fi
   # remove orderer block and other channel configuration transactions and certs
   rm -rf channel-artifacts crypto-config add_org/crypto-config
   # remove the docker-compose yaml file that was customized to the example
   rm -f docker-compose-e2e.yaml add_org/docker-compose-exportingEntityOrg.yaml
+  # remove client certs 
+  rm -rf client-certs
+  if [ "$DEV_MODE" = true ] ; then
+     popd
+  fi
 }
 
 # Using docker-compose-e2e-template.yaml, replace constants with private key file names
@@ -257,26 +302,34 @@ function networkClean () {
 function replacePrivateKey () {
   # Copy the template to the file that will be modified to add the private key
   cp docker-compose-e2e-template.yaml docker-compose-e2e.yaml
-
-  # The next steps will replace the template's contents with the
-  # actual values of the private key file names for the two CAs.
-  CURRENT_DIR=$PWD
-  cd crypto-config/peerOrganizations/exporterorg.trade.com/ca/
-  PRIV_KEY=$(ls *_sk)
-  cd "$CURRENT_DIR"
-  sed -i "s/EXPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-  cd crypto-config/peerOrganizations/importerorg.trade.com/ca/
-  PRIV_KEY=$(ls *_sk)
-  cd "$CURRENT_DIR"
-  sed -i "s/IMPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-  cd crypto-config/peerOrganizations/carrierorg.trade.com/ca/
-  PRIV_KEY=$(ls *_sk)
-  cd "$CURRENT_DIR"
-  sed -i "s/CARRIER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-  cd crypto-config/peerOrganizations/regulatororg.trade.com/ca/
-  PRIV_KEY=$(ls *_sk)
-  cd "$CURRENT_DIR"
-  sed -i "s/REGULATOR_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+  
+  if [ "$DEV_MODE" = true ] ; then
+    CURRENT_DIR=$PWD
+    cd crypto-config/peerOrganizations/devorg.trade.com/ca/
+    PRIV_KEY=$(ls *_sk)
+    cd "$CURRENT_DIR"
+    sed -i "s/DEVORG_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+  else
+    # The next steps will replace the template's contents with the
+    # actual values of the private key file names for the two CAs.
+    CURRENT_DIR=$PWD
+    cd crypto-config/peerOrganizations/exporterorg.trade.com/ca/
+    PRIV_KEY=$(ls *_sk)
+    cd "$CURRENT_DIR"
+    sed -i "s/EXPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    cd crypto-config/peerOrganizations/importerorg.trade.com/ca/
+    PRIV_KEY=$(ls *_sk)
+    cd "$CURRENT_DIR"
+    sed -i "s/IMPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    cd crypto-config/peerOrganizations/carrierorg.trade.com/ca/
+    PRIV_KEY=$(ls *_sk)
+    cd "$CURRENT_DIR"
+    sed -i "s/CARRIER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    cd crypto-config/peerOrganizations/regulatororg.trade.com/ca/
+    PRIV_KEY=$(ls *_sk)
+    cd "$CURRENT_DIR"
+    sed -i "s/REGULATOR_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+  fi
 }
 
 function replacePrivateKeyForNewOrg () {
@@ -320,6 +373,13 @@ function generateCerts (){
   echo "##########################################################"
   echo "##### Generate certificates using cryptogen tool #########"
   echo "##########################################################"
+  # If we are in dev mode, we move to the devmode directory
+  if [ "$DEV_MODE" = true ] ; then
+      if [ $(basename $PWD) != "devmode" ] ; then
+        pushd ./devmode
+        export FABRIC_CFG_PATH=${PWD}
+      fi
+  fi
 
   if [ -d "crypto-config" ]; then
     rm -Rf crypto-config
@@ -411,10 +471,18 @@ function generateChannelArtifacts() {
   echo "###########################################################"
   echo "#########  Generating Orderer Genesis block  ##############"
   echo "###########################################################"
+  if [ "$DEV_MODE" = true ] ; then
+    PROFILE=OneOrgTradeOrdererGenesis
+    CHANNEL_PROFILE=OneOrgTradeChannel
+  else 
+    PROFILE=FourOrgsTradeOrdererGenesis
+    CHANNEL_PROFILE=FourOrgsTradeChannel
+  fi
+
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
   set -x
-  configtxgen -profile FourOrgsTradeOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+  configtxgen -profile $PROFILE -outputBlock ./channel-artifacts/genesis.block
   res=$?
   set +x
   if [ $res -ne 0 ]; then
@@ -426,7 +494,7 @@ function generateChannelArtifacts() {
   echo "###  Generating channel configuration transaction  'channel.tx' ###"
   echo "###################################################################"
   set -x
-  configtxgen -profile FourOrgsTradeChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+  configtxgen -profile $CHANNEL_PROFILE -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
   res=$?
   set +x
   if [ $res -ne 0 ]; then
@@ -434,61 +502,63 @@ function generateChannelArtifacts() {
     exit 1
   fi
 
-  echo
-  echo "#####################################################################"
-  echo "#######  Generating anchor peer update for ExporterOrgMSP  ##########"
-  echo "#####################################################################"
-  set -x
-  configtxgen -profile FourOrgsTradeChannel -outputAnchorPeersUpdate ./channel-artifacts/ExporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ExporterOrgMSP
-  res=$?
-  set +x
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for ExporterOrgMSP..."
-    exit 1
-  fi
+  if [ "$DEV_MODE" = false ] ; then
+    echo
+    echo "#####################################################################"
+    echo "#######  Generating anchor peer update for ExporterOrgMSP  ##########"
+    echo "#####################################################################"
+    set -x
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/ExporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ExporterOrgMSP
+    res=$?
+    set +x
+    if [ $res -ne 0 ]; then
+      echo "Failed to generate anchor peer update for ExporterOrgMSP..."
+      exit 1
+    fi
 
-  echo
-  echo "#####################################################################"
-  echo "#######  Generating anchor peer update for ImporterOrgMSP  ##########"
-  echo "#####################################################################"
-  set -x
-  configtxgen -profile FourOrgsTradeChannel -outputAnchorPeersUpdate \
-  ./channel-artifacts/ImporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ImporterOrgMSP
-  res=$?
-  set +x
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for ImporterOrgMSP..."
-    exit 1
-  fi
+    echo
+    echo "#####################################################################"
+    echo "#######  Generating anchor peer update for ImporterOrgMSP  ##########"
+    echo "#####################################################################"
+    set -x
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
+    ./channel-artifacts/ImporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ImporterOrgMSP
+    res=$?
+    set +x
+    if [ $res -ne 0 ]; then
+      echo "Failed to generate anchor peer update for ImporterOrgMSP..."
+      exit 1
+    fi
 
-  echo
-  echo "####################################################################"
-  echo "#######  Generating anchor peer update for CarrierOrgMSP  ##########"
-  echo "####################################################################"
-  set -x
-  configtxgen -profile FourOrgsTradeChannel -outputAnchorPeersUpdate \
-  ./channel-artifacts/CarrierOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CarrierOrgMSP
-  res=$?
-  set +x
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for CarrierOrgMSP..."
-    exit 1
-  fi
+    echo
+    echo "####################################################################"
+    echo "#######  Generating anchor peer update for CarrierOrgMSP  ##########"
+    echo "####################################################################"
+    set -x
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
+    ./channel-artifacts/CarrierOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CarrierOrgMSP
+    res=$?
+    set +x
+    if [ $res -ne 0 ]; then
+      echo "Failed to generate anchor peer update for CarrierOrgMSP..."
+      exit 1
+    fi
 
-  echo
-  echo "######################################################################"
-  echo "#######  Generating anchor peer update for RegulatorOrgMSP  ##########"
-  echo "######################################################################"
-  set -x
-  configtxgen -profile FourOrgsTradeChannel -outputAnchorPeersUpdate \
-  ./channel-artifacts/RegulatorOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorOrgMSP
-  res=$?
-  set +x
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for RegulatorOrgMSP..."
-    exit 1
+    echo
+    echo "######################################################################"
+    echo "#######  Generating anchor peer update for RegulatorOrgMSP  ##########"
+    echo "######################################################################"
+    set -x
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
+    ./channel-artifacts/RegulatorOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorOrgMSP
+    res=$?
+    set +x
+    if [ $res -ne 0 ]; then
+      echo "Failed to generate anchor peer update for RegulatorOrgMSP..."
+      exit 1
+    fi
+    echo
   fi
-  echo
 }
 
 # Generate configuration (policies, certificates) for new org in JSON format
@@ -552,7 +622,7 @@ else
   exit 1
 fi
 
-while getopts "h?m:c:f:i:o:" opt; do
+while getopts "h?m:c:f:i:o:d:" opt; do
   case "$opt" in
     h|\?)
       printHelp
@@ -565,6 +635,8 @@ while getopts "h?m:c:f:i:o:" opt; do
     i)  IMAGETAG=`uname -m`"-"$OPTARG
     ;;
     o)  LOG_FILE=$OPTARG
+    ;;
+    d)  DEV_MODE=$OPTARG 
     ;;
   esac
 done
