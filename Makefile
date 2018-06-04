@@ -30,12 +30,12 @@ test: chaincode_test composer_test
 .PHONY: chaincode
 chaincode:
 	echo ">> Building chaincode within Docker container"
-	docker run --rm -v $(CC_PATH):/go -v $(DIST_DIR):/dist -w /src golang:1.9.6 sh -c "$(CC_BUILD_CMD)"
+	docker run --rm -v $(CC_PATH):/go -v $(DIST_DIR):/dist -w /go golang:1.9.6 sh -c "$(CC_BUILD_CMD)"
 
 .PHONY: chaincode_test
 chaincode_test:
 	echo ">> Execute unit-tests for chaincode within Docker container"
-	docker run --rm -v $(CC_PATH):/src -w /src golang:1.9.6 sh -c "$(CC_UNITTEST_CMD)"
+	docker run --rm -v $(CC_PATH):/go -w /go/src/github.com/$(CC) golang:1.9.6 sh -c "$(CC_UNITTEST_CMD)"
 
 .PHONY: composer
 composer:
