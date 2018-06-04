@@ -58,6 +58,8 @@ Run `./trade.sh up`
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f docker-compose-e2e.yaml up`.
 - You can view the network logs (from all the containers) in the foreground.
 
+** NOTE:** If testing the middleware or application deployment, stop here, middleware and application instruction will indicate when/how to start additional organization.  
+  
 # Bring Down the Network
 Run `./trade.sh down`
 - If you ran the full application using instructions in [middleware](../middleware/) and [application](../application/), and if you still uncleared docker containers upon running `docker ps -a`:
