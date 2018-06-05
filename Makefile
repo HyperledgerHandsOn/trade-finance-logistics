@@ -49,7 +49,7 @@ composer_test:
 
 .PHONY: middleware
 middleware:
-	echo ">> Building middlewae dependencies"
+	echo ">> Building middleware dependencies"
 	cd middleware && npm install
 
 .PHONY: application
