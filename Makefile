@@ -47,7 +47,19 @@ composer_test:
 	echo ">> Running composer unit-test within Docker container"
 	docker run --rm -v $(COMPOSER_PATH):/src -v $(DIST_DIR):/dist -w /src node:8.11 sh -c "$(COMPOSER_UNITTEST_CMD)"
 
+.PHONY: middleware
+middleware:
+	echo ">> Building middlewae dependencies"
+	cd middleware && npm install
+
+.PHONY: application
+application:
+	echo ">> Building application (web server) dependencies"
+	cd application && npm install
+
 .PHONY: clean
 clean: 
 	echo ">> cleaning dist directory"
-	rm -rf $(ROOT_DIR)/dist	
+	rm -rf $(ROOT_DIR)/dist
+	rm -rf $(ROOT_DIR)/middleware/node_modules
+	rm -rf $(ROOT_DIR)/application/node_modules
