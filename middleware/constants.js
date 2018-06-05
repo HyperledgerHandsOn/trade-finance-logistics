@@ -6,7 +6,7 @@
 var os = require('os');
 var path = require('path');
 
-var tempdir = "../network/client-certs"
+var tempdir = "../network/client-certs";
 //path.join(os.tmpdir(), 'hfc');
 
 // Frame the endorsement policy

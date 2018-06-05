@@ -58,7 +58,7 @@ Run `./trade.sh up`
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f docker-compose-e2e.yaml up`.
 - You can view the network logs (from all the containers) in the foreground.
 
-** NOTE:** If testing the middleware or application deployment, stop here, middleware and application instruction will indicate when/how to start additional organization.  
+** NOTE:** If you are testing the middleware or application deployment, stop here. Middleware and application instructions will indicate when/how to add and start additional organizations.  
   
 # Bring Down the Network
 Run `./trade.sh down`
@@ -88,7 +88,7 @@ The following files and folders should be created:
 - `add_org/docker-compose-exportingEntityOrg.yaml`: network configuration file to launch using the `docker-compose` tool.
 
 # Launch the Network Components of the New Organization
-**Note:** if your network has been stop, first start it using `./trade.sh up`  
+**Note:** if your network has been stopped, first start it using `./trade.sh up`  
 Run `./trade.sh startneworg`  
 - This runs the network as a background process, and logs the output to `logs/network-neworg.log`.
 - Alternatively, you can manually start the network as a foreground process: `docker-compose -f add_org/docker-compose-exportingEntityOrg.yaml up`.
