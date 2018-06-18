@@ -42,6 +42,7 @@ The [docs](docs) folder contains more documentation on the use case.
 To test and run the complete application, you will need to perform the following steps in sequence:
 - **Test the chaincode (smart contract)**: Navigate to the [chaincode](chaincode) folder for instructions.
 - **Launch a trade network**: Navigate to the [network](network) folder for instructions.
+- **Test the Attribute Based Access Control(ABAC)**: Follow these instructions [Testing ABAC](chaincode/abac.md) 
 - **Prepare the middleware**: Navigate to the [middleware](middleware) folder for instructions.
 - **Start and exercise the application server**: Navigate to the [application](application) folder for instructions.
 
