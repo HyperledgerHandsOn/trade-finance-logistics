@@ -47,13 +47,11 @@ _Note_: This script assumes that the initial version of the chaincode is current
 
 # Test Run to Add a New Organization to the Network
 - The `config_upgrade.json` contains the specification of the peer in the new organization (`exportingentityorg`.) Make sure the parameters (hostnames, ports etc.) match those in the [network](../network/) folder.
-- Run `node upgrade-channel.js` to update the channel configuration: a new configuration block will be added to the channel blockchain.
-- Edit the file `constants.js` and change the value of the variable `networkConfig` from `./config.json` to `./config_upgrade.json`.
+- Run `node run-upgrade-channel.js` to update the channel configuration: a new configuration block will be added to the channel blockchain.
 - Run `node new-org-join-channel.js` to join the peer of the new organization to the `tradechannel` channel.
 
 # Test Run to Upgrade the Chaicode
-- Change the endorsement policy to require one member signature from all five orgs:
-  * Edit the `constants.js` file and change the `TRANSACTION_ENDORSEMENT_POLICY` variable from `ALL_FOUR_ORG_MEMBERS` to `ALL_FIVE_ORG_MEMBERS`.
 - Run `node upgrade-chaincode.js` to install the new version of the chaincode on all 5 peers, and upgrade the chaincode version on the `tradechannel` channel.
+  * The chaincode transaction endorsement policy will also change from `Constants.ALL_FOUR_ORG_MEMBERS` to `Constants.ALL_FIVE_ORG_MEMBERS`.
 - Run `node five-org-trade-scenario.js` to run and observe the results of chaincode invocations and queries.
   * _Note_: This script assumes that the upgraded version of the chaincode is currently deployed on the channel.
