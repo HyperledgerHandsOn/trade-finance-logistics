@@ -140,7 +140,7 @@ function createChannel(channel_name, constants) {
 		console.log('Got genesis block. Channel', channel_name, 'already exists');
 		return { status: 'SUCCESS' };
 	}, (err) => {
-		console.log('Channel', channel_name, 'does not exist yet');
+		console.log('Channel', channel_name, 'does not exist yet (IGNORE ANY ORDERER ERROR MESSAGES YOU SEE ABOVE!!)');
 
 		// (OPTIONAL) sign the config as the orderer admin
 		var signature = client.signChannelConfig(config);
