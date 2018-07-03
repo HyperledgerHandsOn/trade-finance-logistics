@@ -54,6 +54,6 @@ In tnis mode, you will manually install and invoke the chaincode using CLI (Comm
   * `peer chaincode invoke -n tw -c '{"Args":["requestTrade", "trade-12", "50000", "Wood for Toys"]}' -C tradechannel`
   * Watch the console logs for information and errors (if any)
 - If the above invocation succeeded, query the chaincode for the status of the trade agreement request:
-  * peer chaincode invoke -n tw -c '{"Args":["getTradeStatus", "trade-12"]}' -C tradechannel`
+  * `peer chaincode invoke -n tw -c '{"Args":["getTradeStatus", "trade-12"]}' -C tradechannel`
   * The chaincode should return the status `REQUESTED`, which you should see in the console logs.
 - You can run other chaincode invocations and queries as per the API.
