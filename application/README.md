@@ -220,7 +220,7 @@ Pre-requisites:
 In a terminal window:
 - __Register or log in an `admin` user to `importerorg` (IMPORTER organization)__
   ```
-  curl -s -X POST http://localhost:4000/users -H "content-type: application/x-www-form-urlencoded" -d 'username=admin&orgName=importerorg&password=adminpw'
+  curl -s -X POST http://localhost:4000/login -H "content-type: application/x-www-form-urlencoded" -d 'username=admin&orgName=importerorg&password=adminpw'
   ```
   * If the user is already registered, you should see something like the following:
   ```
