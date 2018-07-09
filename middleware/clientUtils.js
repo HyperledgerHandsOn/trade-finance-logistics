@@ -418,6 +418,7 @@ function cleanup() {
 			eventhub.disconnect();
 		}
 	}
+	eventhubs.splice(0, eventhubs.length);		// Clear the array
 }
 
 module.exports.txEventsCleanup = cleanup;
