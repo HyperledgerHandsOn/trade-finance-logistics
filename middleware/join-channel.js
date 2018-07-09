@@ -215,6 +215,7 @@ function cleanup() {
 			eventhub.disconnect();
 		}
 	}
+	allEventhubs.splice(0, allEventhubs.length);	// Clear the array
 }
 
 module.exports.processJoinChannel = processJoinChannel;

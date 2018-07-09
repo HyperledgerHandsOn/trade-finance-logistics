@@ -228,7 +228,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 
 			}).catch((err) => {
 
-				console.log('Failed to send ' + type + ' transaction and get notifications within the timeout period.');
+				console.log('Failed to send ' + type + ' transaction and get notifications within the timeout period:', err);
 				throw new Error('Failed to send ' + type + ' transaction and get notifications within the timeout period.');
 
 			});
