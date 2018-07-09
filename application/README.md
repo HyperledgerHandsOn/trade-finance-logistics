@@ -215,7 +215,7 @@ In a terminal window:
 # Sample Instructions (Script)
 Pre-requisites:
 - Make sure you have `curl` installed in your system.
-- Make sure you have the initial 4-org [network](../ntwork/) up and running.
+- Make sure you have the initial 4-org [network](../network/) up and running.
 
 In a terminal window:
 - __Register or log in an `admin` user to `importerorg` (IMPORTER organization)__

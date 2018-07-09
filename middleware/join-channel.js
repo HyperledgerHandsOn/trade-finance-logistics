@@ -205,7 +205,7 @@ function joinChannel(org, ORGS, constants) {
 	});
 }
 
-// Cleanup opearations: for now, just unsubscribe the eventHub instances
+// Cleanup operations: for now, just unsubscribe the eventHub instances
 function cleanup() {
 	// Disconnect the event hub
 	for(var key in allEventhubs) {
