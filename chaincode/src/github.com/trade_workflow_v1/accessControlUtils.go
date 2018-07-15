@@ -23,6 +23,7 @@ import (
 	"crypto/x509"
 )
 
+
 func getTxCreatorInfo(stub shim.ChaincodeStubInterface) (string, string, error) {
 	var mspid string
 	var err error
