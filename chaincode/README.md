@@ -37,8 +37,7 @@ In tnis mode, you will manually install and invoke the chaincode using CLI (Comm
   * `docker exec -it chaincode bash` (Log into the chaincode container)
   * `cd trade_workflow_v1`
   * `go build` (Compile chaincode to generate an executable)
-  * Exit the container
-- Launch the chaincode by running the following command:
+- Launch the chaincode by running the following command in the container:
   * `CORE_PEER_ADDRESS=peer:7052 CORE_CHAINCODE_ID_NAME=tw:0 ./trade_workflow_v1`
 
 ## Install and Instantiate Chaincode
