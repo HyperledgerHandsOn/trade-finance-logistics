@@ -41,10 +41,22 @@ services:
       - 7053:7053
     depends_on:
       - orderer
+  ca:
+    container_name: ca
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca
+      - FABRIC_CA_SERVER_TLS_ENABLED=false
+    volumes:
+      - ./crypto-config/peerOrganizations/devorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.devorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/*_sk -b admin:adminpw -d'
+    ports:
+      - "7054:7054"
 
   cli:
     container_name: cli
-    image: hyperledger/fabric-tools
+    image: hyperledger/fabric-ca-tools
     tty: true
     environment:
       - GOPATH=/opt/gopath
@@ -83,7 +95,6 @@ services:
         - /var/run/:/host/var/run/
         - ./crypto-config/peerOrganizations/devorg.trade.com/peers/peer0.devorg.trade.com/msp:/etc/hyperledger/msp
         - ./../../chaincode/src/github.com:/opt/gopath/src/chaincode
-
     depends_on:
       - orderer
       - peer

@@ -177,6 +177,8 @@ func (t *TradeWorkflowChaincode) requestTrade(stub shim.ChaincodeStubInterface, 
 	var amount int
 	var err error
 
+	// ADD TRADELIMIT RETRIEVAL HERE
+
 	// Access control: Only an Importer Org member can invoke this transaction
 	if !t.testMode && !authenticateImporterOrg(creatorOrg, creatorCertIssuer) {
 		return shim.Error("Caller not a member of Importer Org. Access denied.")
@@ -192,6 +194,8 @@ func (t *TradeWorkflowChaincode) requestTrade(stub shim.ChaincodeStubInterface, 
 		return shim.Error(err.Error())
 	}
 
+	// ADD TRADE LIMIT CHECK HERE 
+	
 	tradeAgreement = &TradeAgreement{amount, args[2], REQUESTED, 0}
 	tradeAgreementBytes, err = json.Marshal(tradeAgreement)
 	if err != nil {
