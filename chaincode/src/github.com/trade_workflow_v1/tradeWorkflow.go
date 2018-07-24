@@ -1318,7 +1318,7 @@ func (t *TradeWorkflowChaincode) getAccountBalance(stub shim.ChaincodeStubInterf
 
 func main() {
 	twc := new(TradeWorkflowChaincode)
-	twc.testMode = true
+	twc.testMode = false
 	err := shim.Start(twc)
 	if err != nil {
 		fmt.Printf("Error starting Trade Workflow chaincode: %s", err)
