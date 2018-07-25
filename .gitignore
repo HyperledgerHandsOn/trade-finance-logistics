@@ -22,3 +22,5 @@ dist/*
 # Ignore lint Output
 **/.nyc_output/
 
+# Ignore Node installation status file
+**/package-lock.json
