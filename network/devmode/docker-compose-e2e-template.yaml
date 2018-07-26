@@ -106,11 +106,11 @@ services:
       - CORE_PEER_LOCALMSPID=DevOrgMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp
     working_dir: /opt/gopath/src/chaincode
-    command: /bin/bash -c 'sleep 600000'
+    command: /bin/bash -c 'cp -r /opt/gopath/src/chaincode_copy/* /opt/gopath/src/chaincode/ && sed -i "s/twc\.testMode = false/twc\.testMode = true/g" /opt/gopath/src/chaincode/trade_workflow_v1/tradeWorkflow.go && sleep 600000'
     volumes:
         - /var/run/:/host/var/run/
         - ./crypto-config/peerOrganizations/devorg.trade.com/peers/peer0.devorg.trade.com/msp:/etc/hyperledger/msp
-        - ./../../chaincode/src/github.com:/opt/gopath/src/chaincode
+        - ./../../chaincode/src/github.com:/opt/gopath/src/chaincode_copy
     depends_on:
       - orderer
       - peer

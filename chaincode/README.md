@@ -15,11 +15,40 @@ From root directory of project, run `make chaincode_test`
 # Run Chaincode in Net Mode
 In this mode, your chaincode will be installed and invoked as part of a larger distributed application.   
 
-Follow instructions in [network](../network/), [middleware](../middleware/), and [application](../application) in sequence.
+## Prerequisites
+- Make sure that access control is **enabled** within the chaincode by setting the value of `TradeWorkflowChaincode.testMode` to `false`.
+  * In both [trade_workflow/tradeWorkflow.go](./src/github.com/trade_workflow/tradeWorkflow.go) and [trade_workflow_v1/tradeWorkflow.go](./src/github.com/trade_workflow_v1/tradeWorkflow.go), this is set in the `main` function as follows:
+    ```
+	func main() {
+		twc := new(TradeWorkflowChaincode)
+		twc.testMode = false
+		err := shim.Start(twc)
+		if err != nil {
+			fmt.Printf("Error starting Trade Workflow chaincode: %s", err)
+		}
+	}
+    ```
+
+## Launch the Network and Application
+- Follow instructions in [network](../network/), [middleware](../middleware/), and [application](../application) in sequence.
 
 
 # Run Chaincode in Dev Mode
-In tnis mode, you will manually install and invoke the chaincode using CLI (Command-Line Interface) commands.   
+In this mode, you will manually install and invoke the chaincode using CLI (Command-Line Interface) commands.   
+
+## Prerequisites
+- Make sure that access control is **disabled** within the chaincode by setting the value of `TradeWorkflowChaincode.testMode` to `true`.
+  * In both [trade_workflow/tradeWorkflow.go](./src/github.com/trade_workflow/tradeWorkflow.go) and [trade_workflow_v1/tradeWorkflow.go](./src/github.com/trade_workflow_v1/tradeWorkflow.go), this is set in the `main` function as follows:
+    ```
+	func main() {
+		twc := new(TradeWorkflowChaincode)
+		twc.testMode = true
+		err := shim.Start(twc)
+		if err != nil {
+			fmt.Printf("Error starting Trade Workflow chaincode: %s", err)
+		}
+	}
+    ```
 
 ## Start the Blockchain Network
 - Navigate to the [network](../network/) folder and run `./trade.sh up -d true`.
