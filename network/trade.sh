@@ -493,7 +493,7 @@ function generateChannelArtifacts() {
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
   set -x
-  configtxgen -profile $PROFILE -outputBlock ./channel-artifacts/genesis.block
+  configtxgen -profile $PROFILE -outputBlock ./channel-artifacts/genesis.block -channelID $CHANNEL_NAME
   res=$?
   set +x
   if [ $res -ne 0 ]; then
@@ -533,7 +533,7 @@ function generateChannelArtifacts() {
     echo "#####################################################################"
     set -x
     configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
-    ./channel-artifacts/ImporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ImporterOrgMSP
+    ./channel-artifacts/ImporterOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ImporterOrgMSP -channelID $CHANNEL_NAME
     res=$?
     set +x
     if [ $res -ne 0 ]; then
@@ -547,7 +547,7 @@ function generateChannelArtifacts() {
     echo "####################################################################"
     set -x
     configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
-    ./channel-artifacts/CarrierOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CarrierOrgMSP
+    ./channel-artifacts/CarrierOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CarrierOrgMSP -channelID $CHANNEL_NAME
     res=$?
     set +x
     if [ $res -ne 0 ]; then
@@ -561,7 +561,7 @@ function generateChannelArtifacts() {
     echo "######################################################################"
     set -x
     configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate \
-    ./channel-artifacts/RegulatorOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorOrgMSP
+    ./channel-artifacts/RegulatorOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorOrgMSP -channelID $CHANNEL_NAME
     res=$?
     set +x
     if [ $res -ne 0 ]; then
@@ -586,7 +586,7 @@ function generateChannelConfigForNewOrg() {
   echo "#########  Generating Channel Configuration for Exporting Entity Org  ##############"
   echo "####################################################################################"
   set -x
-  FABRIC_CFG_PATH=${PWD}/add_org/ && configtxgen -printOrg ExportingEntityOrgMSP > ./channel-artifacts/exportingEntityOrg.json
+  FABRIC_CFG_PATH=${PWD}/add_org/ && configtxgen -printOrg ExportingEntityOrgMSP -channelID $CHANNEL_NAME > ./channel-artifacts/exportingEntityOrg.json
   res=$?
   set +x
   if [ $res -ne 0 ]; then

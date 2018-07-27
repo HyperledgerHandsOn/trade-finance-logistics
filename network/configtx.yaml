@@ -16,44 +16,6 @@
 
 ################################################################################
 #
-#   Profile
-#
-#   - Different configuration profiles may be encoded here to be specified
-#   as parameters to the configtxgen tool
-#
-################################################################################
-Profiles:
-
-    FourOrgsTradeOrdererGenesis:
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *TradeOrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
-            TradeConsortium:
-                Organizations:
-                    - *ExporterOrg
-                    - *ImporterOrg
-                    - *CarrierOrg
-                    - *RegulatorOrg
-    FourOrgsTradeChannel:
-        Consortium: TradeConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *ExporterOrg
-                - *ImporterOrg
-                - *CarrierOrg
-                - *RegulatorOrg
-            Capabilities:
-                <<: *ApplicationCapabilities
-
-################################################################################
-#
 #   Section: Organizations
 #
 #   - This section defines the different organizational identities which will
@@ -75,6 +37,18 @@ Organizations:
         # MSPDir is the filesystem path which contains the MSP configuration
         MSPDir: crypto-config/ordererOrganizations/trade.com/msp
 
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('TradeOrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('TradeOrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('TradeOrdererMSP.admin')"
+
     - &ExporterOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
@@ -84,6 +58,18 @@ Organizations:
         ID: ExporterOrgMSP
 
         MSPDir: crypto-config/peerOrganizations/exporterorg.trade.com/msp
+
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ExporterOrgMSP.admin', 'ExporterOrgMSP.peer')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ExporterOrgMSP.admin', 'ExporterOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ExporterOrgMSP.admin')"
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
@@ -102,6 +88,18 @@ Organizations:
 
         MSPDir: crypto-config/peerOrganizations/importerorg.trade.com/msp
 
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ImporterOrgMSP.admin', 'ImporterOrgMSP.peer')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ImporterOrgMSP.admin', 'ImporterOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ImporterOrgMSP.admin')"
+
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
@@ -119,6 +117,18 @@ Organizations:
 
         MSPDir: crypto-config/peerOrganizations/carrierorg.trade.com/msp
 
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('CarrierOrgMSP.admin', 'CarrierOrgMSP.peer')"
+            Writers:
+                Type: Signature
+                Rule: "OR('CarrierOrgMSP.admin', 'CarrierOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('CarrierOrgMSP.admin')"
+
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
@@ -135,6 +145,18 @@ Organizations:
         ID: RegulatorOrgMSP
 
         MSPDir: crypto-config/peerOrganizations/regulatororg.trade.com/msp
+
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('RegulatorOrgMSP.admin', 'RegulatorOrgMSP.peer')"
+            Writers:
+                Type: Signature
+                Rule: "OR('RegulatorOrgMSP.admin', 'RegulatorOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('RegulatorOrgMSP.admin')"
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
@@ -188,6 +210,25 @@ Orderer: &OrdererDefaults
     # the orderer side of the network
     Organizations:
 
+    # Policies defines the set of policies at this level of the config tree
+    # For Orderer policies, their canonical path is
+    #   /Channel/Orderer/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ALL Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "ANY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the orderer for the peer to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ALL Writers"
+
 ################################################################################
 #
 #   SECTION: Application
@@ -201,6 +242,46 @@ Application: &ApplicationDefaults
     # Organizations is the list of orgs which are defined as participants on
     # the application side of the network
     Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Application policies, their canonical path is
+    #   /Channel/Application/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ALL Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "ANY Admins"
+
+################################################################################
+#
+#   CHANNEL
+#
+#   This section defines the values to encode into a config transaction or
+#   genesis block for channel related parameters.
+#
+################################################################################
+Channel: &ChannelDefaults
+    # Policies defines the set of policies at this level of the config tree
+    # For Channel policies, their canonical path is
+    #   /Channel/<PolicyName>
+    Policies:
+        # Who may invoke the 'Deliver' API
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        # Who may invoke the 'Broadcast' API
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        # By default, who may modify elements at this config level
+        Admins:
+            Type: ImplicitMeta
+            Rule: "ANY Admins"
 
 ################################################################################
 #
@@ -249,4 +330,43 @@ Capabilities:
         # determined to be desired for all peers running v1.0.x, but the
         # modification of which would cause incompatibilities.  Users should
         # leave this flag set to true.
-        V1_1: true
+        V1_2: true
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    FourOrgsTradeOrdererGenesis:
+        <<: *ChannelDefaults
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *TradeOrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            TradeConsortium:
+                Organizations:
+                    - *ExporterOrg
+                    - *ImporterOrg
+                    - *CarrierOrg
+                    - *RegulatorOrg
+    FourOrgsTradeChannel:
+        Consortium: TradeConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ExporterOrg
+                - *ImporterOrg
+                - *CarrierOrg
+                - *RegulatorOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
