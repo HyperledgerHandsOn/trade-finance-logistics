@@ -1,3 +1,5 @@
+# _This branch (release-1.2) is a work-in-progress_
+
 # Trade Application
 This is a use case on trade finance and logistics, designed to demonstrate the capabilities of Hyperledger (mainly Fabric) blockchain tools.
 
