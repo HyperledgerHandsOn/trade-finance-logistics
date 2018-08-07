@@ -123,9 +123,9 @@ function installChaincodeInOrgPeers(org, chaincode_path, chaincode_version) {
 			let one_good = false;
 			if (proposalResponses && proposalResponses[i].response && proposalResponses[i].response.status === 200) {
 				one_good = true;
-				logger.info('install proposal was good from peer %s in org %s', targets[i].url, org);
+				logger.info('install proposal was good from peer %s in org %s', targets[i].getUrl(), org);
 			} else {
-				logger.error('install proposal was bad from peer %s in org %s', targets[i].url, org);
+				logger.error('install proposal was bad from peer %s in org %s', targets[i].getUrl(), org);
 				errors.push(proposalResponses[i]);
 			}
 			all_good = all_good & one_good;
