@@ -2,9 +2,6 @@ sudo: required
 services:
 - docker
 dist: trusty
-cache:
-  directories:
-  - node_modules
 script:
 - make build
 - make test
