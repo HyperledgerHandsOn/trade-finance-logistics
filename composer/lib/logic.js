@@ -20,6 +20,31 @@
  * Write your transaction processor functions here
  */
 
+
+ /**
+ * Sample transaction
+ * @param {org.trade.net.MergeAssets} sampleTransaction
+ * @transaction
+ */
+async function onMergeAssets(tx) {
+    var assetRegistery;
+    var mergeFromAsset = tx.mergeFromAsset;
+    var mergeToAsset = tx.mergeTo;
+    mergeToAsset.value += tx.mergeFrom.value;
+
+    return getAssetRegistry('org.trade.net.SampleAsset').then(
+        function(ar){
+            assetRegistery = ar;
+            return assetRegistery.update(mergeToAsset);
+        }
+    ).then(
+        function(){
+            return assetRegistery.remove(mergeFromAsset);
+        }
+    )
+}
+
+
 /**
  * Sample transaction
  * @param {org.trade.net.SampleTransaction} sampleTransaction
