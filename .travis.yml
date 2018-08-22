@@ -15,4 +15,4 @@ deploy:
   file: "./dist/network.bna"
   on:
     repo: bvdenber/trade-finance-logistics
-  tags: true
+    tags: true
