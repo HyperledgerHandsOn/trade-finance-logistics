@@ -14,37 +14,7 @@
 # limitations under the License.
 #
 
-################################################################################
-#
-#   Profile
-#
-#   - Different configuration profiles may be encoded here to be specified
-#   as parameters to the configtxgen tool
-#
-################################################################################
-Profiles:
 
-    OneOrgTradeOrdererGenesis:
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *TradeOrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
-            TradeConsortium:
-                Organizations:
-                    - *DevOrg
-    OneOrgTradeChannel:
-        Consortium: TradeConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *DevOrg
-            Capabilities:
-                <<: *ApplicationCapabilities
 
 ################################################################################
 #
@@ -193,3 +163,35 @@ Capabilities:
         # modification of which would cause incompatibilities.  Users should
         # leave this flag set to true.
         V1_1: true
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    OneOrgTradeOrdererGenesis:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *TradeOrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            TradeConsortium:
+                Organizations:
+                    - *DevOrg
+    OneOrgTradeChannel:
+        Consortium: TradeConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *DevOrg
+            Capabilities:
+                <<: *ApplicationCapabilities

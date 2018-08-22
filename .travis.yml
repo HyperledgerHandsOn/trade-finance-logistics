@@ -11,8 +11,6 @@ script:
 deploy:
   provider: releases
   api_key: ${OAUTH_TOKEN}
-  file_glob: true
-  file: ./dist/*
-  skip_cleanup: true
+  file: "./dist/network.bna"
   on:
-    tags: true
+    repo: bvdenber/trade-finance-logistics
