@@ -2,6 +2,9 @@ sudo: required
 services:
 - docker
 dist: trusty
+cache:
+  directories:
+  - node_modules
 script:
 - make build
 - make test
@@ -9,7 +12,7 @@ deploy:
   provider: releases
   api_key: ${OAUTH_TOKEN}
   file_glob: true
-  file: "./dist/network.bna"
+  file: ./dist/*
+  skip_cleanup: true
   on:
-    repo: bvdenber/trade-finance-logistics
     tags: true
