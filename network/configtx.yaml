@@ -14,134 +14,7 @@
 # limitations under the License.
 #
 
-################################################################################
-#
-#   Profile
-#
-#   - Different configuration profiles may be encoded here to be specified
-#   as parameters to the configtxgen tool
-#
-################################################################################
-Profiles:
 
-    FourOrgsTradeOrdererGenesis:
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *TradeOrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
-            TradeConsortium:
-                Organizations:
-                    - *ExporterOrg
-                    - *ImporterOrg
-                    - *CarrierOrg
-                    - *RegulatorOrg
-    FourOrgsTradeChannel:
-        Consortium: TradeConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *ExporterOrg
-                - *ImporterOrg
-                - *CarrierOrg
-                - *RegulatorOrg
-            Capabilities:
-                <<: *ApplicationCapabilities
-
-################################################################################
-#
-#   Section: Organizations
-#
-#   - This section defines the different organizational identities which will
-#   be referenced later in the configuration.
-#
-################################################################################
-Organizations:
-
-    # SampleOrg defines an MSP using the sampleconfig.  It should never be used
-    # in production but may be used as a template for other definitions
-    - &TradeOrdererOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: TradeOrdererOrg
-
-        # ID to load the MSP definition as
-        ID: TradeOrdererMSP
-
-        # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: crypto-config/ordererOrganizations/trade.com/msp
-
-    - &ExporterOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: ExporterOrgMSP
-
-        # ID to load the MSP definition as
-        ID: ExporterOrgMSP
-
-        MSPDir: crypto-config/peerOrganizations/exporterorg.trade.com/msp
-
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.exporterorg.trade.com
-              Port: 7051
-
-    - &ImporterOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: ImporterOrgMSP
-
-        # ID to load the MSP definition as
-        ID: ImporterOrgMSP
-
-        MSPDir: crypto-config/peerOrganizations/importerorg.trade.com/msp
-
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.importerorg.trade.com
-              Port: 7051
-
-    - &CarrierOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: CarrierOrgMSP
-
-        # ID to load the MSP definition as
-        ID: CarrierOrgMSP
-
-        MSPDir: crypto-config/peerOrganizations/carrierorg.trade.com/msp
-
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.carrierorg.trade.com
-              Port: 7051
-
-    - &RegulatorOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: RegulatorOrgMSP
-
-        # ID to load the MSP definition as
-        ID: RegulatorOrgMSP
-
-        MSPDir: crypto-config/peerOrganizations/regulatororg.trade.com/msp
-
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.regulatororg.trade.com
-              Port: 7051
 
 ################################################################################
 #
@@ -250,3 +123,136 @@ Capabilities:
         # modification of which would cause incompatibilities.  Users should
         # leave this flag set to true.
         V1_1: true
+
+
+
+################################################################################
+#
+#   Section: Organizations
+#
+#   - This section defines the different organizational identities which will
+#   be referenced later in the configuration.
+#
+################################################################################
+Organizations:
+
+    # SampleOrg defines an MSP using the sampleconfig.  It should never be used
+    # in production but may be used as a template for other definitions
+    - &TradeOrdererOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: TradeOrdererOrg
+
+        # ID to load the MSP definition as
+        ID: TradeOrdererMSP
+
+        # MSPDir is the filesystem path which contains the MSP configuration
+        MSPDir: crypto-config/ordererOrganizations/trade.com/msp
+
+    - &ExporterOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: ExporterOrgMSP
+
+        # ID to load the MSP definition as
+        ID: ExporterOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/exporterorg.trade.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.exporterorg.trade.com
+              Port: 7051
+
+    - &ImporterOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: ImporterOrgMSP
+
+        # ID to load the MSP definition as
+        ID: ImporterOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/importerorg.trade.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.importerorg.trade.com
+              Port: 7051
+
+    - &CarrierOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: CarrierOrgMSP
+
+        # ID to load the MSP definition as
+        ID: CarrierOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/carrierorg.trade.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.carrierorg.trade.com
+              Port: 7051
+
+    - &RegulatorOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: RegulatorOrgMSP
+
+        # ID to load the MSP definition as
+        ID: RegulatorOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/regulatororg.trade.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.regulatororg.trade.com
+              Port: 7051
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    FourOrgsTradeOrdererGenesis:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *TradeOrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            TradeConsortium:
+                Organizations:
+                    - *ExporterOrg
+                    - *ImporterOrg
+                    - *CarrierOrg
+                    - *RegulatorOrg
+    FourOrgsTradeChannel:
+        Consortium: TradeConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ExporterOrg
+                - *ImporterOrg
+                - *CarrierOrg
+                - *RegulatorOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+
