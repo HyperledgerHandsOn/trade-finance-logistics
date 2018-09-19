@@ -63,7 +63,7 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('ExporterOrgMSP.admin', 'ExporterOrgMSP.peer')"
+                Rule: "OR('ExporterOrgMSP.admin', 'ExporterOrgMSP.peer', 'ExporterOrgMSP.client')"
             Writers:
                 Type: Signature
                 Rule: "OR('ExporterOrgMSP.admin', 'ExporterOrgMSP.client')"
@@ -92,7 +92,7 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('ImporterOrgMSP.admin', 'ImporterOrgMSP.peer')"
+                Rule: "OR('ImporterOrgMSP.admin', 'ImporterOrgMSP.peer', 'ImporterOrgMSP.client')"
             Writers:
                 Type: Signature
                 Rule: "OR('ImporterOrgMSP.admin', 'ImporterOrgMSP.client')"
@@ -121,7 +121,7 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('CarrierOrgMSP.admin', 'CarrierOrgMSP.peer')"
+                Rule: "OR('CarrierOrgMSP.admin', 'CarrierOrgMSP.peer', 'CarrierOrgMSP.client')"
             Writers:
                 Type: Signature
                 Rule: "OR('CarrierOrgMSP.admin', 'CarrierOrgMSP.client')"
@@ -150,7 +150,7 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('RegulatorOrgMSP.admin', 'RegulatorOrgMSP.peer')"
+                Rule: "OR('RegulatorOrgMSP.admin', 'RegulatorOrgMSP.peer', 'RegulatorOrgMSP.client')"
             Writers:
                 Type: Signature
                 Rule: "OR('RegulatorOrgMSP.admin', 'RegulatorOrgMSP.client')"
@@ -219,7 +219,7 @@ Orderer: &OrdererDefaults
             Rule: "ANY Readers"
         Writers:
             Type: ImplicitMeta
-            Rule: "ALL Writers"
+            Rule: "ANY Writers"
         Admins:
             Type: ImplicitMeta
             Rule: "ANY Admins"
@@ -227,7 +227,7 @@ Orderer: &OrdererDefaults
         # from the orderer for the peer to validate it.
         BlockValidation:
             Type: ImplicitMeta
-            Rule: "ALL Writers"
+            Rule: "ANY Writers"
 
 ################################################################################
 #
@@ -252,7 +252,7 @@ Application: &ApplicationDefaults
             Rule: "ANY Readers"
         Writers:
             Type: ImplicitMeta
-            Rule: "ALL Writers"
+            Rule: "ANY Writers"
         Admins:
             Type: ImplicitMeta
             Rule: "ANY Admins"

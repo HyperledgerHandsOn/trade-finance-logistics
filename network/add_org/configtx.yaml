@@ -34,6 +34,18 @@ Organizations:
 
         MSPDir: ../crypto-config/peerOrganizations/exportingentityorg.trade.com/msp
 
+        # Policies for reading, writing, configuration
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ExportingEntityOrgMSP.admin', 'ExportingEntityOrgMSP.peer', 'ExportingEntityOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ExportingEntityOrgMSP.admin', 'ExportingEntityOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ExportingEntityOrgMSP.admin')"
+
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only

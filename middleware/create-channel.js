@@ -171,6 +171,7 @@ function createChannel(channel_name, constants) {
 			console.log('Successfully created the channel.');
 			return ClientUtils.sleep(5000);
 		} else {
+			console.log(result);
 			throw new Error('Failed to create the channel. ');
 		}
 	}, (err) => {
