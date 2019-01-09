@@ -10,9 +10,11 @@ script:
 - make test
 deploy:
   provider: releases
-  api_key: ${OAUTH_TOKEN}
+  api_key: d0a0f32d32b76af8303a3952c6824c4919d884d6
   file_glob: true
-  file: ./dist/*
+  file: "./dist/network.bna"
   skip_cleanup: true
   on:
-    tags: true
+    repo: EuLeEr/trade-finance-logistics
+    branch: release-1.2
+    tags: true	

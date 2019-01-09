@@ -37,6 +37,11 @@ transaction SampleTransaction {
   o String newValue
 }
 
+transaction	MergeAssets	{
+-->	Asset	mergeFrom
+-->	Asset	mergeTo
+}
+
 event SampleEvent {
   --> SampleAsset asset
   o String oldValue
