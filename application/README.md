@@ -214,7 +214,7 @@ In a terminal window:
 
 # Sample Instructions (Script)
 Pre-requisites:
-- Make sure you have `curl` installed in your system.
+- Make sure you have `curl` installed on your system.
 - Make sure you have the initial 4-org [network](../network/) up and running.
 
 In a terminal window:
@@ -364,3 +364,20 @@ In a terminal window:
     ```
     {"success":true,"message":"{\"Status\":\"ACCEPTED\"}"}
     ```
+  
+  
+As a shortcut, you can also use (and adapt) shell scripts in the [client_scripts](./client_scripts) folder to run the above commands
+- _Pre-requisite_: make sure you have `jq` installed on your system for JSON parsing. (On an Ubuntu/Debian system, run `sudo apt-get install jq`.)
+- The scripts to run are as follows (make sure you run the channel and chaincode operation scripts from the same folder you ran the login script in):
+  * Admin registration/login: [adminLogin.sh](./client_scripts/adminLogin.sh)
+  * User Jim registration/login: [userLogin.sh](./client_scripts/userLogin.sh)
+  * Create channel: [createChannel.sh](./client_scripts/createChannel.sh)
+  * Join channel: [joinChannel.sh](./client_scripts/joinChannel.sh)
+  * Install chaincode: [installChaincode.sh](./client_scripts/installChaincode.sh)
+  * Instantiate chaincode: [instantiateChaincode.sh](./client_scripts/instantiateChaincode.sh)
+  * Upgrade channel: [upgradeChannel.sh](./client_scripts/upgradeChannel.sh)
+  * Upgrade chaincode: [upgradeChaincode.sh](./client_scripts/upgradeChaincode.sh)
+  * Invoke `requestTrade` operation: [invoke_requestTrade.sh](./client_scripts/invoke_requestTrade.sh)
+  * Query `getTradeStatus` operation: [query_getTradeStatus.sh](./client_scripts/query_getTradeStatus.sh)
+
+
