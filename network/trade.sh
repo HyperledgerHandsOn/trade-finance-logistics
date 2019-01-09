@@ -596,7 +596,7 @@ function generateChannelConfigForNewOrg() {
   echo
 }
 
-# channel name
+# channel name (overrides default 'testchainid')
 CHANNEL_NAME="tradechannel"
 # use this as the default docker-compose yaml definition
 COMPOSE_FILE=docker-compose-e2e.yaml
