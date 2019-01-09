@@ -364,10 +364,10 @@ In a terminal window:
     ```
     {"success":true,"message":"{\"Status\":\"ACCEPTED\"}"}
     ```
-
-
+  
+  
 As a shortcut, you can also use (and adapt) shell scripts in the [client_scripts](./client_scripts) folder to run the above commands
-- Pre-requisite: make sure you have `jq` installed on your system for JSON parsing. (On an Ubuntu/Debian system, run `sudo apt-get install jq`.)
+- _Pre-requisite_: make sure you have `jq` installed on your system for JSON parsing. (On an Ubuntu/Debian system, run `sudo apt-get install jq`.)
 - The scripts to run are as follows (make sure you run the channel and chaincode operation scripts from the same folder you ran the login script in):
   * Admin registration/login: [adminLogin.sh](./client_scripts/adminLogin.sh)
   * User Jim registration/login: [userLogin.sh](./client_scripts/userLogin.sh)
