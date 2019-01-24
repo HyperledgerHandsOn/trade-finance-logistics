@@ -53,9 +53,10 @@ In this mode, you will manually install and invoke the chaincode using CLI (Comm
 ## Start the Blockchain Network
 - Navigate to the [network](../network/) folder and run `./trade.sh up -d true`.
 - This will first create cryptographic material for the network participants and channel artifacts
-- It will then start a network of 4 docker containers:
+- It will then start a network of 5 docker containers:
   * An orderer
   * A peer running in dev-mode.
+  * A Fabric-CA instance to create identities and credentials.
   * A container to build and launch the chaincode
   * A container to run CLI commands
     - To create a blockchain channel named `tradechannel`
