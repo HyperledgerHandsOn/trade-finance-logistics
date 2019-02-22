@@ -1,3 +1,5 @@
+(**_This branch corresponds to the instructions given in the book. It depends on the `release-1.1` branches of Hyperledger [Fabric](https://github.com/hyperledger/fabric/tree/release-1.1) and [Fabric-CA](https://github.com/hyperledger/fabric-ca/tree/release-1.1)_**)
+
 # Trade Application
 This is a use case on trade finance and logistics, designed to demonstrate the capabilities of Hyperledger (mainly Fabric) blockchain tools.
 
