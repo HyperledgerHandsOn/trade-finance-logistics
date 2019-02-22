@@ -1,4 +1,4 @@
-# _This branch (release-1.2) is a work-in-progress: `network` and `middleware` have been upgraded_
+(**_This branch is an upgrade. It depends on the `release-1.2` branches of Hyperledger [Fabric](https://github.com/hyperledger/fabric/tree/release-1.2) and [Fabric-CA](https://github.com/hyperledger/fabric-ca/tree/release-1.2)_**)
 
 # Trade Application
 This is a use case on trade finance and logistics, designed to demonstrate the capabilities of Hyperledger (mainly Fabric) blockchain tools.
