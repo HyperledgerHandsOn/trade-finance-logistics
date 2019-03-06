@@ -319,27 +319,52 @@ function replacePrivateKey () {
     cd crypto-config/peerOrganizations/devorg.trade.com/ca/
     PRIV_KEY=$(ls *_sk)
     cd "$CURRENT_DIR"
-    sed -i "s/DEVORG_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    if [ $(uname -s) == 'Darwin' ] ; then
+      sed -i '' "s/DEVORG_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    else
+      sed -i "s/DEVORG_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    fi
+  
   else
     # The next steps will replace the template's contents with the
     # actual values of the private key file names for the two CAs.
-    CURRENT_DIR=$PWD
-    cd crypto-config/peerOrganizations/exporterorg.trade.com/ca/
-    PRIV_KEY=$(ls *_sk)
-    cd "$CURRENT_DIR"
-    sed -i "s/EXPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-    cd crypto-config/peerOrganizations/importerorg.trade.com/ca/
-    PRIV_KEY=$(ls *_sk)
-    cd "$CURRENT_DIR"
-    sed -i "s/IMPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-    cd crypto-config/peerOrganizations/carrierorg.trade.com/ca/
-    PRIV_KEY=$(ls *_sk)
-    cd "$CURRENT_DIR"
-    sed -i "s/CARRIER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-    cd crypto-config/peerOrganizations/regulatororg.trade.com/ca/
-    PRIV_KEY=$(ls *_sk)
-    cd "$CURRENT_DIR"
-    sed -i "s/REGULATOR_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    if [ $(uname -s) == 'Darwin' ] ; then
+      CURRENT_DIR=$PWD
+      cd crypto-config/peerOrganizations/exporterorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i '' "s/EXPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/importerorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i '' "s/IMPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/carrierorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i '' "s/CARRIER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/regulatororg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i '' "s/REGULATOR_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    else
+      CURRENT_DIR=$PWD
+      cd crypto-config/peerOrganizations/exporterorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i "s/EXPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/importerorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i "s/IMPORTER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/carrierorg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i "s/CARRIER_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+      cd crypto-config/peerOrganizations/regulatororg.trade.com/ca/
+      PRIV_KEY=$(ls *_sk)
+      cd "$CURRENT_DIR"
+      sed -i "s/REGULATOR_CA_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+    fi
   fi
 }
 
@@ -353,7 +378,11 @@ function replacePrivateKeyForNewOrg () {
   cd crypto-config/peerOrganizations/exportingentityorg.trade.com/ca/
   PRIV_KEY=$(ls *_sk)
   cd "$CURRENT_DIR"
-  sed -i "s/EXPORTINGENTITY_CA_PRIVATE_KEY/${PRIV_KEY}/g" add_org/docker-compose-exportingEntityOrg.yaml
+  if [ $(uname -s) == 'Darwin' ] ; then
+    sed -i '' "s/EXPORTINGENTITY_CA_PRIVATE_KEY/${PRIV_KEY}/g" add_org/docker-compose-exportingEntityOrg.yaml
+  else
+    sed -i "s/EXPORTINGENTITY_CA_PRIVATE_KEY/${PRIV_KEY}/g" add_org/docker-compose-exportingEntityOrg.yaml
+  fi
 }
 
 # We will use the cryptogen tool to generate the cryptographic material (x509 certs)
