@@ -100,6 +100,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 		console.log('Successfully enrolled user \'admin\'');
 		user_handle = admin;
 
+		let userPeer = null;
 		for(let org in ORGS) {
 			if (ORGS[org].hasOwnProperty('peer1')) {
 				let key = 'peer1';
@@ -112,6 +113,9 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 						'ssl-target-name-override': ORGS[org][key]['server-hostname']
 					}
 				);
+				if (org == userOrg) {
+					userPeer = peer;
+				}
 
 				targets.push(peer);
 				channel.addPeer(peer);
@@ -121,14 +125,7 @@ function instantiateOrUpgradeChaincode(userOrg, chaincode_path, version, funcNam
 		// an event listener can only register with a peer in its own org
 		logger.debug(' create new eventhub %s', ORGS[userOrg]['peer1'].events);
 		let data = fs.readFileSync(path.join(__dirname, ORGS[userOrg]['peer1']['tls_cacerts']));
-		let eh = client.newEventHub();
-		eh.setPeerAddr(
-			ORGS[userOrg]['peer1'].events,
-			{
-				pem: Buffer.from(data).toString(),
-				'ssl-target-name-override': ORGS[userOrg]['peer1']['server-hostname']
-			}
-		);
+		let eh = channel.newChannelEventHub(userPeer);
 		eh.connect();
 		ClientUtils.eventhubs.push(eh);
 

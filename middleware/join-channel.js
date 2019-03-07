@@ -128,24 +128,16 @@ function joinChannel(org, ORGS, constants) {
 			if (ORGS[org].hasOwnProperty(key)) {
 				if (key.indexOf('peer') === 0) {
 					data = fs.readFileSync(path.join(__dirname, ORGS[org][key]['tls_cacerts']));
-					targets.push(
-						client.newPeer(
+					var peer = client.newPeer(
 							ORGS[org][key].requests,
 							{
 								pem: Buffer.from(data).toString(),
 								'ssl-target-name-override': ORGS[org][key]['server-hostname']
 							}
-						)
-					);
+						);
+					targets.push(peer);
 
-					let eh = client.newEventHub();
-					eh.setPeerAddr(
-						ORGS[org][key].events,
-						{
-							pem: Buffer.from(data).toString(),
-							'ssl-target-name-override': ORGS[org][key]['server-hostname']
-						}
-					);
+					let eh = channel.newChannelEventHub(peer);
 					eh.connect();
 					eventhubs.push(eh);
 					allEventhubs.push(eh);
@@ -154,32 +146,6 @@ function joinChannel(org, ORGS, constants) {
 		}
 
 		var eventPromises = [];
-		eventhubs.forEach((eh) => {
-			let txPromise = new Promise((resolve, reject) => {
-				let handle = setTimeout(reject, 40000);
-
-				eh.registerBlockEvent((block) => {
-					clearTimeout(handle);
-
-					// in real-world situations, a peer may have more than one channel so
-					// we must check that this block came from the channel we asked the peer to join
-					if(block.data.data.length === 1) {
-						// Config block must only contain one transaction
-						var channel_header = block.data.data[0].payload.header.channel_header;
-						if (channel_header.channel_id === channel_name) {
-							console.log('The new channel has been successfully joined on peer '+ eh.getPeerAddr());
-							resolve();
-						}
-						else {
-							console.log('The new channel has not been succesfully joined');
-							reject();
-						}
-					}
-				});
-			});
-
-			eventPromises.push(txPromise);
-		});
 		tx_id = client.newTransactionID();
 		let request = {
 			targets : targets,

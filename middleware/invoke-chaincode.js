@@ -85,6 +85,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName, constant
 
 		// set up the channel to use each org's 'peer1' for
 		// both requests and events
+		let userPeer = null;
 		for (let key in ORGS) {
 			if (ORGS.hasOwnProperty(key) && typeof ORGS[key].peer1 !== 'undefined') {
 				let data = fs.readFileSync(path.join(__dirname, ORGS[key].peer1['tls_cacerts']));
@@ -95,6 +96,9 @@ function invokeChaincode(userOrg, version, funcName, argList, userName, constant
 						'ssl-target-name-override': ORGS[key].peer1['server-hostname']
 					}
 				);
+				if (key == userOrg) {
+					userPeer = peer;
+				}
 				channel.addPeer(peer);
 				targets.push(peer);	// Just for logging purposes
 			}
@@ -102,15 +106,7 @@ function invokeChaincode(userOrg, version, funcName, argList, userName, constant
 
 		// an event listener can only register with a peer in its own org
 		let data = fs.readFileSync(path.join(__dirname, ORGS[userOrg].peer1['tls_cacerts']));
-		let eh = client.newEventHub();
-		eh.setPeerAddr(
-			ORGS[userOrg].peer1.events,
-			{
-				pem: Buffer.from(data).toString(),
-				'ssl-target-name-override': ORGS[userOrg].peer1['server-hostname'],
-				'grpc.http2.keepalive_time' : 15
-			}
-		);
+		let eh = channel.newChannelEventHub(userPeer);
 		eh.connect();
 		ClientUtils.eventhubs.push(eh);
 
