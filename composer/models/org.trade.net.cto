@@ -42,3 +42,8 @@ event SampleEvent {
   o String oldValue
   o String newValue
 }
+
+transaction MergeAssets {
+  --> Asset mergeFrom
+  --> Asset mergeTo
+}

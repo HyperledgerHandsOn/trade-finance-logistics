@@ -44,3 +44,26 @@ async function sampleTransaction(tx) {
     event.newValue = tx.newValue;
     emit(event);
 }
+
+/**
+ * Sample transaction
+ * @param {org.trade.net.MergeAssets} tx
+ * @transaction
+ */
+function onMergeAssets(tx) {
+    var assetRegistry;
+    var mergeFromAsset = tx.mergeFrom;
+    var mergeToAsset = tx.mergeTo;
+    var toNum = parseInt(mergeToAsset.value);
+    var fromNum = parseInt(mergeFromAsset.value);
+    mergeToAsset.value = toNum + fromNum + '';
+    // hahasdfasdfasdfasdf
+    return getAssetRegistry('org.trade.net.SampleAsset')
+        .then(function(ar) {
+            assetRegistry = ar;
+            return assetRegistry.update(mergeToAsset);
+        })
+        .then(function() {
+            return assetRegistry.remove(mergeFromAsset);
+        });
+}

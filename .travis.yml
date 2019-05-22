@@ -11,8 +11,7 @@ script:
 deploy:
   provider: releases
   api_key: ${OAUTH_TOKEN}
-  file_glob: true
-  file: ./dist/*
-  skip_cleanup: true
+  file: "./dist/*"
   on:
+    repo: yunzhishang/trade-finance-logistics
     tags: true

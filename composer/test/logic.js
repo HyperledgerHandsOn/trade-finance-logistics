@@ -460,4 +460,35 @@ describe('#' + namespace, () => {
         businessNetworkConnection.submitTransaction(transaction).should.be.rejectedWith(/does not have .* access to resource/);
     });
 
+    it('should change the value to ' + assetType + ' to 200', () => {
+        const factory =
+            businessNetworkConnection.getBusinessNetwork().getFactory();
+        // Create the asset 1
+        const asset1 = factory.newResource(namespace, assetType, 'ASSET_001');
+        asset1.value = '100';
+        asset1.owner = factory.newRelationship(namespace, participantType, 'alice@email.com');
+        // Create the asset 2
+        const asset2 = factory.newResource(namespace, assetType, 'ASSET_002');
+        asset2.value = '100';
+        asset2.owner = factory.newRelationship(namespace, participantType, 'bob@email.com');
+        // Create a transaction to change the asset's value property
+        const mergeAssetTx = factory.newTransaction(namespace, 'MergeAssets');
+        mergeAssetTx.mergeFrom = factory.newRelationship(namespace, assetType, asset1.$identifier);
+        mergeAssetTx.mergeTo = factory.newRelationship(namespace, assetType, asset2.$identifier);
+        let assetRegistry;
+        return businessNetworkConnection.getAssetRegistry(namespace + '.' + assetType).then(registry => {
+            assetRegistry = registry;
+            return assetRegistry.add(asset1);
+        }).then(() => {
+            return assetRegistry.add(asset2);
+        }).then(() => {
+            // Submit the transaction
+            return businessNetworkConnection.submitTransaction(mergeAssetTx);
+        }).then(() => {
+            return assetRegistry.get(asset2.$identifier);
+        }).then(newAsset => {
+            newAsset.value.should.equal('200');
+        });
+    });
+
 });
