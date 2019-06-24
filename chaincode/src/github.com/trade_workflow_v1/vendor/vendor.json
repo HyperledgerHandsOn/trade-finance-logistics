@@ -370,11 +370,11 @@
 			"revisionTime": "2018-01-25T16:20:14Z"
 		},
 		{
-			"checksumSHA1": "6XgDKuGDUrSu3HqONVb9y3T52aw=",
+			"checksumSHA1": "PhNgGeov8h2c9+8oMixMRYQvbqs=",
 			"origin": "github.com/hyperledger/fabric/vendor/github.com/miekg/pkcs11",
 			"path": "github.com/miekg/pkcs11",
-			"revision": "0f38dbc4d432fe07e63643966026ec9cfb44c358",
-			"revisionTime": "2018-01-25T16:20:14Z"
+			"revision": "526e95e2f81cc0df041f259481b84daaee9d432f",
+			"revisionTime": "2019-06-20T19:33:12Z"
 		},
 		{
 			"checksumSHA1": "M5oBxx1OJaHAEBXSPPbnPPRB1Mc=",
@@ -629,5 +629,5 @@
 			"revisionTime": "2018-01-25T16:20:14Z"
 		}
 	],
-	"rootPath": "github.com/trade_workflow_v1"
+	"rootPath": "trade-finance-logistics/chaincode/src/github.com/trade_workflow_v1"
 }

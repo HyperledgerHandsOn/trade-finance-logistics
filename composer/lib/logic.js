@@ -44,3 +44,24 @@ async function sampleTransaction(tx) {
     event.newValue = tx.newValue;
     emit(event);
 }
+
+/**
+  * Sample transaction
+  * @param {org.example.biznet.MergeAssets} tx
+  * @transaction
+  */
+ function onMergeAssets(tx) {
+    var assetRegistry;
+    var mergeFromAsset = tx.mergeFrom;
+    var mergeToAsset = tx.mergeTo;
+    mergeToAsset.value += tx.mergeFrom.value;
+  
+    return getAssetRegistry('org.trade.net')
+      .then(function(ar) {
+        assetRegistry = ar;
+        return assetRegistry.update(mergeToAsset);
+      })
+      .then(function() {
+        return assetRegistry.remove(mergeFromAsset);
+      });
+  }

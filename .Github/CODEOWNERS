@@ -1,0 +1,12 @@
+# In this example, documentation and Header.txt are part # of the default match. Default owners if nothing else 
+# matches.
+*       @neersharma
+# Code related should be validated by Rama.  
+# JavaScripts files could have been separated 
+# into tests versus logic by using folder's structure
+*.qry   @ciroix
+*.acl   @ciroix
+*.cto   @ciroix
+*.js    @ciroix
+# Package.json should be reviewed by everyone
+package.json    @neersharma @ciroix 
