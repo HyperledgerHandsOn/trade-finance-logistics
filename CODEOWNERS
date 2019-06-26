@@ -7,4 +7,4 @@ matches.
 # into tests versus logic by using folder's structure
 permission_test.txt    @iris9190
 # Package.json should be reviewed by everyone
-package.json    @yunho0130 @iris9190
+package.json    @yunho0130
