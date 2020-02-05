@@ -12,7 +12,7 @@ the nodes themselves (peers and orderers) are connected in a blockchain network 
 ...whereas the other organizations have one non-admin user each.
 
 # Prerequisites to Configure and Launch the Network
-Our application code is based on the current Hyperledger Fabric release version (`release-1.2` branch.)
+Our application code is based on the current Hyperledger Fabric release version (`release-1.4` branch.)
 - Make sure you have `docker` and `docker-compose` tools installed on your system.
 - Make sure you have `go` installed on your system.
   * Select a workspace directory where you want to store your go projects
@@ -25,13 +25,13 @@ Our application code is based on the current Hyperledger Fabric release version 
   * `cd $GOPATH/src/github.com/hyperledger`
   * `git clone https://github.com/hyperledger/fabric/`
   * `cd fabric`
-  * If the default branch is not `release-1.2`, append `-b release-1.2` to the above command
+  * If the default branch is not `release-1.4`, append `-b release-1.4` to the above command
   * Run `make configtxgen cryptogen configtxlator` to build the tools we will use to create configuration files.
     * Binaries can be found under `.build/bin`
     * Either move the binaries to a path such as `/usr/local/bin` or add the `$GOPATH/src/github.com/hyperledger/fabric/.build/bin` to the PATH environment variable.
   * Run `make docker` to build docker images for the various network components from the downloaded source code.
 - Download and build [Fabric-CA](https://github.com/hyperledger/fabric-ca/):
-  * `git clone https://github.com/hyperledger/fabric-ca/` (`release-1.2` branch as above)
+  * `git clone https://github.com/hyperledger/fabric-ca/` (`release-1.4` branch as above)
   * Run `make docker` to build docker images for the MSP components.
 
 # Configuration
