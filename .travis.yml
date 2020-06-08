@@ -10,9 +10,9 @@ script:
 - make test
 deploy:
   provider: releases
-  api_key: ${OAUTH_TOKEN}
-  file_glob: true
-  file: ./dist/*
-  skip_cleanup: true
+  api_key:
+    secure: ${OAUTH_TOKEN}
+  file: "./dist/network.bna"
   on:
-    tags: true
+    repo: tunks/trade-finance-logistics
+  skip_cleanup: 'true'

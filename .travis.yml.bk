@@ -1,0 +1,18 @@
+sudo: required
+services:
+- docker
+dist: trusty
+cache:
+  directories:
+  - node_modules
+script:
+- make build
+- make test
+deploy:
+  provider: releases
+  api_key:
+    secure: B4prqWGSlIWfu3OoHF6UkHjFI67t2ZN+2cbmGJSe1ZEXqGzV0kZGqrYb9vw0cjkJDmCU/ssDBWa/JPVHzucpTp5TcZzz/hj++gmCLpVPD6ikbkryOp1Zm3Po+lAHqbo9hJGiHM5baSGItFr9SHUoGmrvOlJ/LLfD9ZXqDCxB4BzjCLCBWZtpIBCY9gdTcE0mX5vwdahhfZqo0yCwQV7m1hEnfm31vTO4tAQCLmHrCwuU1Pl7pGKspDBPDVtaq+IW8l7YVu95xSt5JIjGlRf4qMkaHvdrs9YAZiNd7pe0DZU3/LOsiGEnAPhpDBVLcnfLR9lqbTwwC8x3skFGLfa8XdhBHdiLxIHwuo9rVeDmLDR/zV81Jyx2FwJMxujCChik2oXGomQl7s4hsf17pLCSJ1caM/T82pTe00dCgAyRh1IrNHs+3LOUpl5KN6qifNqlDgjQzsTLsK799S37V91yUPTX01o62Dzlmy8nmYyJT6ePxxfnYS9PIO1pzXe5WhkpjEa7mdI044wCNoZL2D+RCfDmMcbxAFks5ziL6qBON1Hb9o5S6paDmaVakiMHlUobEp0o6ToJmTbaNQVRWlgkgd1mrRWi76ynlVhl/Ox3fYxSuhlxIdIaqfDo+vTTTTRaNqlQ6iBCrHAkqnZHBIyx8cS53exzmEqHuWAY0vbwdvA=
+  file: "./dist/network.bna"
+  on:
+    repo: tunks/trade-finance-logistics
+  skip_cleanup: 'true'
