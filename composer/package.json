@@ -1,6 +1,6 @@
 {
   "name": "trade-finance-logistics",
-  "version": "0.0.1",
+  "version": "1.1.0",
   "description": "Sample Letter of Credit sample",
   "scripts": {
     "prepare": "mkdirp ../dist && composer archive create --sourceType dir --sourceName . -a ../dist/trade-finance-logistics.bna",
