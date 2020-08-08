@@ -1,7 +1,7 @@
 (**_This branch corresponds to the instructions given in the book. It depends on the `release-1.1` branches of Hyperledger [Fabric](https://github.com/hyperledger/fabric/tree/release-1.1) and [Fabric-CA](https://github.com/hyperledger/fabric-ca/tree/release-1.1)_**)
 
 # Trade Application
-This is a use case on trade finance and logistics, designed to demonstrate the capabilities of Hyperledger (mainly Fabric) blockchain tools.
+This is a use case on trade finance and logistics, designed to demonstrate the capabilities of Hyperledger (mainly Fabric) blockchain tools. can be adapted for document trail for other applications.
 
 # Use Case Scenario Overview
 The trade scenario consists of 6 participants:
@@ -44,7 +44,7 @@ The [docs](docs) folder contains more documentation on the use case.
 To test and run the complete application, you will need to perform the following steps in sequence:
 - **Test the chaincode (smart contract)**: Navigate to the [chaincode](chaincode) folder for instructions.
 - **Launch a trade network**: Navigate to the [network](network) folder for instructions.
-- **Test Attribute Based Access Control(ABAC)**: Follow these instructions: [Testing ABAC](chaincode/abac.md) 
+- **Test Attribute Based Access Control(ABAC)**: Follow these instructions: [Testing ABAC](chaincode/abac.md)
 - **Prepare the middleware**: Navigate to the [middleware](middleware) folder for instructions.
 - **Start and exercise the application server**: Navigate to the [application](application) folder for instructions.
 
