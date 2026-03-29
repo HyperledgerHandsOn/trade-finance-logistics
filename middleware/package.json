@@ -7,7 +7,7 @@
     "fabric-ca-client": "~1.1.0",
     "fabric-client": "~1.1.0",
     "fs-extra": "^2.0.0",
-    "jsrsasign": "6.2.2",
+    "jsrsasign": "11.1.1",
     "tape": "^4.5.1",
     "tape-promise": "^1.1.0"
   },
