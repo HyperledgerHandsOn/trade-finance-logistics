@@ -25,129 +25,113 @@ var instantiateCC = require('./instantiate-chaincode.js');
 var invokeCC = require('./invoke-chaincode.js');
 var queryCC = require('./query-chaincode.js');
 
+// Centralized cleanup function
+function cleanupResources() {
+    try {
+        ClientUtils.txEventsCleanup();
+    } catch (cleanupErr) {
+        console.warn('Warning during ClientUtils cleanup:', cleanupErr.message);
+    }
+    
+    try {
+        joinChannel.joinEventsCleanup();
+    } catch (cleanupErr) {
+        console.warn('Warning during joinChannel cleanup:', cleanupErr.message);
+    }
+}
 
-// Create a channel using the given network configuration
-createChannel.createChannel(Constants.CHANNEL_NAME).then(() => {
-	console.log('\n');
-	console.log('--------------------------');
-	console.log('CHANNEL CREATION COMPLETE');
-	console.log('--------------------------');
-	console.log('\n');
+// Enhanced error handling wrapper
+async function runFabricOperations() {
+    let currentStep = 'START';
+    
+    try {
+        currentStep = 'CREATE_CHANNEL';
+        await createChannel.createChannel(Constants.CHANNEL_NAME);
+        console.log('\n');
+        console.log('--------------------------');
+        console.log('CHANNEL CREATION COMPLETE');
+        console.log('--------------------------');
+        console.log('\n');
 
-	return joinChannel.processJoinChannel();
-}, (err) => {
-	console.log('\n');
-	console.log('-------------------------');
-	console.log('CHANNEL CREATION FAILED:', err);
-	console.log('-------------------------');
-	console.log('\n');
-	process.exit(1);
-})
-// Join peers to the channel created above
-.then(() => {
-	console.log('\n');
-	console.log('----------------------');
-	console.log('CHANNEL JOIN COMPLETE');
-	console.log('----------------------');
-	console.log('\n');
+        currentStep = 'JOIN_CHANNEL';
+        await joinChannel.processJoinChannel();
+        console.log('\n');
+        console.log('----------------------');
+        console.log('CHANNEL JOIN COMPLETE');
+        console.log('----------------------');
+        console.log('\n');
 
-	return installCC.installChaincode(Constants.CHAINCODE_PATH, Constants.CHAINCODE_VERSION);
-}, (err) => {
-	console.log('\n');
-	console.log('---------------------');
-	console.log('CHANNEL JOIN FAILED:', err);
-	console.log('---------------------');
-	console.log('\n');
-	process.exit(1);
-})
-// Install chaincode on the channel on all peers
-.then(() => {
-	console.log('\n');
-	console.log('---------------------------');
-	console.log('CHAINCODE INSTALL COMPLETE');
-	console.log('---------------------------');
-	console.log('\n');
+        currentStep = 'INSTALL_CHAINCODE';
+        await installCC.installChaincode(Constants.CHAINCODE_PATH, Constants.CHAINCODE_VERSION);
+        console.log('\n');
+        console.log('---------------------------');
+        console.log('CHAINCODE INSTALL COMPLETE');
+        console.log('---------------------------');
+        console.log('\n');
 
-	return instantiateCC.instantiateOrUpgradeChaincode(
-		Constants.IMPORTER_ORG,
-		Constants.CHAINCODE_PATH,
-		Constants.CHAINCODE_VERSION,
-		'init',
-		['LumberInc', 'LumberBank', '100000', 'WoodenToys', 'ToyBank', '200000', 'UniversalFrieght', 'ForestryDepartment'],
-		false
-	);
-}, (err) => {
-	console.log('\n');
-	console.log('--------------------------');
-	console.log('CHAINCODE INSTALL FAILED:', err);
-	console.log('--------------------------');
-	console.log('\n');
-	process.exit(1);
-})
-// Instantiate chaincode on the channel on all peers
-.then(() => {
-	console.log('\n');
-	console.log('-------------------------------');
-	console.log('CHAINCODE INSTANTIATE COMPLETE');
-	console.log('-------------------------------');
-	console.log('\n');
-	ClientUtils.txEventsCleanup();
+        currentStep = 'INSTANTIATE_CHAINCODE';
+        await instantiateCC.instantiateOrUpgradeChaincode(
+            Constants.IMPORTER_ORG,
+            Constants.CHAINCODE_PATH,
+            Constants.CHAINCODE_VERSION,
+            'init',
+            ['LumberInc', 'LumberBank', '100000', 'WoodenToys', 'ToyBank', '200000', 'UniversalFrieght', 'ForestryDepartment'],
+            false
+        );
+        console.log('\n');
+        console.log('-------------------------------');
+        console.log('CHAINCODE INSTANTIATE COMPLETE');
+        console.log('-------------------------------');
+        console.log('\n');
 
-	return invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys'], 'Importer');
-}, (err) => {
-	console.log('\n');
-	console.log('------------------------------');
-	console.log('CHAINCODE INSTANTIATE FAILED:', err);
-	console.log('------------------------------');
-	console.log('\n');
-	process.exit(1);
-})
-// Invoke a trade request operation on the chaincode
-.then(() => {
-	console.log('\n');
-	console.log('------------------------------');
-	console.log('CHAINCODE INVOCATION COMPLETE');
-	console.log('------------------------------');
-	console.log('\n');
+        currentStep = 'INVOKE_CHAINCODE';
+        await invokeCC.invokeChaincode(Constants.IMPORTER_ORG, Constants.CHAINCODE_VERSION, 'requestTrade', ['2ks89j9', '50000','Wood for Toys'], 'Importer');
+        console.log('\n');
+        console.log('------------------------------');
+        console.log('CHAINCODE INVOCATION COMPLETE');
+        console.log('------------------------------');
+        console.log('\n');
 
-	return queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Exporter');
-}, (err) => {
-	console.log('\n');
-	console.log('-----------------------------');
-	console.log('CHAINCODE INVOCATION FAILED:', err);
-	console.log('-----------------------------');
-	console.log('\n');
-	process.exit(1);
-})
-// Query the chaincode for the trade request status
-.then((result) => {
-	console.log('\n');
-	console.log('-------------------------');
-	console.log('CHAINCODE QUERY COMPLETE');
-	console.log('VALUE:', result);
-	console.log('-------------------------');
-	console.log('\n');
-	ClientUtils.txEventsCleanup();
-}, (err) => {
-	console.log('\n');
-	console.log('------------------------');
-	console.log('CHAINCODE QUERY FAILED:', err);
-	console.log('------------------------');
-	console.log('\n');
-	process.exit(1);
-});
+        currentStep = 'QUERY_CHAINCODE';
+        var result = await queryCC.queryChaincode(Constants.EXPORTER_ORG, Constants.CHAINCODE_VERSION, 'getTradeStatus', ['2ks89j9'], 'Exporter');
+        console.log('\n');
+        console.log('-------------------------');
+        console.log('CHAINCODE QUERY COMPLETE');
+        console.log('VALUE:', result);
+        console.log('-------------------------');
+        console.log('\n');
 
+    } catch (err) {
+        console.log('\n');
+        console.log('----------------------------------------');
+        console.log(`❌ OPERATION FAILED AT STEP: ${currentStep}`);
+        console.log('----------------------------------------');
+        console.log('Error details:', err);
+        console.log('\n');
+        
+        // Clean up all resources regardless of where failure occurred
+        cleanupResources();
+        
+        process.exit(1);
+    } finally {
+        cleanupResources();
+    }
+}
+
+// Run the enhanced orchestration
+runFabricOperations();
+
+// Enhanced process event handlers with consolidated cleanup
 process.on('uncaughtException', err => {
-	console.error(err);
-	joinChannel.joinEventsCleanup();
+    console.error('UNCAUGHT EXCEPTION:', err);
+    cleanupResources();
+    process.exit(1);
 });
 
 process.on('unhandledRejection', err => {
-	console.error(err);
-	joinChannel.joinEventsCleanup();
+    console.error('UNHANDLED REJECTION:', err);
+    cleanupResources();
+    process.exit(1);
 });
 
-process.on('exit', () => {
-	joinChannel.joinEventsCleanup();
-	ClientUtils.txEventsCleanup();
-});
+process.on('exit', cleanupResources);
